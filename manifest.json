@@ -2,7 +2,7 @@
   "name": "WeekFlow Pro",
   "short_name": "WeekFlow",
   "description": "Your personal weekly planner — saved forever in the cloud",
-  "start_url": "/weekflow-pro.html",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#F7F3EE",
@@ -10,15 +10,15 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192.svg",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.svg",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -27,8 +27,14 @@
     {
       "name": "Planner",
       "short_name": "Planner",
-      "url": "/weekflow-pro.html",
-      "icons": [{"src": "icon-192.svg", "sizes": "192x192"}]
+      "url": "/index.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
