@@ -665,7 +665,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="tb-today-btn" id="today-btn">Today</button>
     </div>
     <div class="tb-right">
-      <button class="tb-install-btn hidden" id="tb-install-btn" title="Install App">📲 Install App</button>
+      <button class="tb-install-btn" id="tb-install-btn" title="Install App">📲 Install App</button>
       <button class="tb-notif-btn" title="Notifications" onclick="showPage('notifications')">🔔<span class="notif-badge" id="notif-badge"></span></button>
       <div class="tb-avatar" id="tb-avatar">?</div>
       <div class="tb-name" id="tb-name">—</div>
@@ -814,7 +814,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 
   <!-- ══ PERMANENT INSTALL FAB (mobile) ══ -->
-  <button class="install-fab hidden" id="install-fab">
+  <button class="install-fab" id="install-fab">
     <span class="fab-icon">📲</span> Install App
   </button>
 
@@ -1700,6 +1700,9 @@ window.addEventListener('appinstalled', ()=>{
 // Check if already installed on load
 if(isInStandaloneMode) {
   hideInstallButtons();
+} else {
+  // Always show install button — user can install anytime
+  showInstallButtons();
 }
 
 // ══════════════════════════════════════════
