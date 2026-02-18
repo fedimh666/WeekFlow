@@ -453,6 +453,124 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .day-cell .add-task-btn { display: flex; }
 }
 
+/* ══ PERMANENT INSTALL BUTTON (always visible) ══ */
+.install-fab {
+  position: fixed;
+  bottom: 88px;
+  right: 16px;
+  z-index: 250;
+  background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 11px 18px;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,107,107,.45);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .2s, box-shadow .2s;
+  animation: fabPulse 2.5s ease infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+.install-fab:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 8px 28px rgba(255,107,107,.5); }
+.install-fab:active { transform: scale(.95); }
+.install-fab.hidden { display: none !important; }
+.install-fab .fab-icon { font-size: 18px; }
+@keyframes fabPulse {
+  0%,100% { box-shadow: 0 4px 20px rgba(255,107,107,.45); }
+  50%      { box-shadow: 0 4px 30px rgba(255,107,107,.75); }
+}
+
+/* iOS instruction modal */
+.ios-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(26,18,8,.5);
+  backdrop-filter: blur(6px);
+}
+.ios-modal.show { display: flex; }
+.ios-modal-box {
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  padding: 32px 28px 48px;
+  width: 100%;
+  max-width: 480px;
+  animation: slideUp .35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp { from{transform:translateY(100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
+.ios-modal-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 22px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.ios-modal-sub { font-size:13px; color:var(--muted); text-align:center; margin-bottom:28px; line-height:1.6; }
+.ios-steps { display:flex; flex-direction:column; gap:16px; margin-bottom:28px; }
+.ios-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.ios-step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ios-step-icon { font-size: 22px; flex-shrink: 0; }
+.ios-step-text { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+.ios-step-text span { color: var(--muted); font-weight: 400; display: block; font-size: 11px; margin-top: 2px; }
+.ios-close-btn {
+  width: 100%; padding: 14px; border-radius: 12px;
+  background: var(--ink); border: none; color: #fff;
+  font-family: 'Fraunces', serif; font-weight: 700; font-size: 15px;
+  cursor: pointer; transition: opacity .2s;
+}
+.ios-close-btn:hover { opacity: .85; }
+
+/* On desktop — show install button in topbar instead */
+@media(min-width:769px) {
+  .install-fab { display: none; }
+  .tb-install-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg,#FF6B6B,#FF9F43);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 7px 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .tb-install-btn:hover { opacity: .85; }
+  .tb-install-btn.hidden { display: none !important; }
+}
+@media(max-width:768px) {
+  .tb-install-btn { display: none !important; }
+}
+
 /* ══ PWA INSTALL BANNER ══ */
 .pwa-banner{
   position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -547,6 +665,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="tb-today-btn" id="today-btn">Today</button>
     </div>
     <div class="tb-right">
+      <button class="tb-install-btn hidden" id="tb-install-btn" title="Install App">📲 Install App</button>
       <button class="tb-notif-btn" title="Notifications" onclick="showPage('notifications')">🔔<span class="notif-badge" id="notif-badge"></span></button>
       <div class="tb-avatar" id="tb-avatar">?</div>
       <div class="tb-name" id="tb-name">—</div>
@@ -691,6 +810,43 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="notif-log" id="notif-log"></div>
         <button class="notif-btn" style="margin-top:16px;background:var(--bg);color:var(--ink);border:1.5px solid var(--border);" onclick="sendTestNotif()">🧪 Send Test Notification</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ PERMANENT INSTALL FAB (mobile) ══ -->
+  <button class="install-fab hidden" id="install-fab">
+    <span class="fab-icon">📲</span> Install App
+  </button>
+
+  <!-- ══ iOS INSTALL INSTRUCTIONS MODAL ══ -->
+  <div class="ios-modal" id="ios-modal">
+    <div class="ios-modal-box">
+      <div class="ios-modal-title">📲 Install WeekFlow</div>
+      <div class="ios-modal-sub">Add WeekFlow to your home screen for the full app experience — works offline too!</div>
+      <div class="ios-steps">
+        <div class="ios-step">
+          <div class="ios-step-num">1</div>
+          <div class="ios-step-icon">⬆️</div>
+          <div class="ios-step-text">Tap the Share button
+            <span>The box with an arrow at the bottom of Safari</span>
+          </div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">2</div>
+          <div class="ios-step-icon">➕</div>
+          <div class="ios-step-text">Tap "Add to Home Screen"
+            <span>Scroll down in the share menu to find it</span>
+          </div>
+        </div>
+        <div class="ios-step">
+          <div class="ios-step-num">3</div>
+          <div class="ios-step-icon">✅</div>
+          <div class="ios-step-text">Tap "Add" to confirm
+            <span>WeekFlow will appear on your home screen!</span>
+          </div>
+        </div>
+      </div>
+      <button class="ios-close-btn" onclick="document.getElementById('ios-modal').classList.remove('show')">Got it!</button>
     </div>
   </div>
 
@@ -1463,40 +1619,88 @@ if('serviceWorker' in navigator){
 }
 
 // ══════════════════════════════════════════
-// ✅ FEATURE 15 — INSTALL PROMPT (Add to Home Screen)
+// ✅ FEATURE 15 — SMART INSTALL BUTTON
+// Works on Android (native prompt) + iOS (instructions)
 // ══════════════════════════════════════════
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{
+let deferredPrompt = null;
+
+// Detect iOS
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+function showInstallButtons() {
+  // Don't show if already installed
+  if(isInStandaloneMode) return;
+  const fab = document.getElementById('install-fab');
+  const tbBtn = document.getElementById('tb-install-btn');
+  if(fab) fab.classList.remove('hidden');
+  if(tbBtn) tbBtn.classList.remove('hidden');
+}
+
+function hideInstallButtons() {
+  document.getElementById('install-fab')?.classList.add('hidden');
+  document.getElementById('tb-install-btn')?.classList.add('hidden');
+  document.getElementById('pwa-banner')?.classList.remove('show');
+}
+
+async function triggerInstall() {
+  haptic([30]);
+  if(isIOS) {
+    // iOS — show step-by-step instructions
+    document.getElementById('ios-modal')?.classList.add('show');
+  } else if(deferredPrompt) {
+    // Android / Chrome — native install prompt
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    if(outcome === 'accepted') {
+      showToast('🎉 WeekFlow installed! Find it on your home screen.');
+      hideInstallButtons();
+    }
+    deferredPrompt = null;
+  } else {
+    // Fallback — show toast with instructions
+    showToast('💡 Use your browser menu → "Add to Home Screen"');
+  }
+}
+
+// Android — capture install prompt
+window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
-  deferredPrompt=e;
-  // Show banner after 3 seconds
+  deferredPrompt = e;
+  showInstallButtons();
+  // Also show floating banner after 4s
   setTimeout(()=>{
-    const banner=document.getElementById('pwa-banner');
-    if(banner&&!localStorage.getItem('pwa-dismissed'))banner.classList.add('show');
-  },3000);
+    const banner = document.getElementById('pwa-banner');
+    if(banner && !localStorage.getItem('pwa-dismissed')) banner.classList.add('show');
+  }, 4000);
 });
 
-document.getElementById('pwa-install-btn')?.addEventListener('click',async()=>{
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  const {outcome}=await deferredPrompt.userChoice;
-  if(outcome==='accepted'){
-    showToast('🎉 WeekFlow installed! Check your home screen.');
-    document.getElementById('pwa-banner').classList.remove('show');
-  }
-  deferredPrompt=null;
-});
+// iOS — always show install button (no beforeinstallprompt on iOS)
+if(isIOS && !isInStandaloneMode) {
+  showInstallButtons();
+}
+
+// Wire up all install buttons
+document.getElementById('install-fab')?.addEventListener('click', triggerInstall);
+document.getElementById('tb-install-btn')?.addEventListener('click', triggerInstall);
+document.getElementById('pwa-install-btn')?.addEventListener('click', triggerInstall);
 
 document.getElementById('pwa-banner-close')?.addEventListener('click',()=>{
   document.getElementById('pwa-banner').classList.remove('show');
   localStorage.setItem('pwa-dismissed','1');
 });
 
-// Hide banner when already installed
-window.addEventListener('appinstalled',()=>{
-  document.getElementById('pwa-banner')?.classList.remove('show');
-  showToast('✅ WeekFlow is now installed!');
+// Hide everything when installed
+window.addEventListener('appinstalled', ()=>{
+  hideInstallButtons();
+  showToast('✅ WeekFlow is now installed on your home screen!');
+  haptic([50,30,50,30,100]);
 });
+
+// Check if already installed on load
+if(isInStandaloneMode) {
+  hideInstallButtons();
+}
 
 // ══════════════════════════════════════════
 // ✅ FEATURE 16 — OFFLINE MODE DETECTION
