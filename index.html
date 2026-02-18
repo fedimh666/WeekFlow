@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WeekFlow Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1208">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WeekFlow">
+  <meta name="mobile-web-app-capable" content="yes">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1208">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WeekFlow">
+  <meta name="mobile-web-app-capable" content="yes">
 <style>
 :root {
   --bg:#F7F3EE; --white:#FFFFFF; --ink:#1A1208; --muted:#9A8F7E; --border:#E4DDD3;
@@ -361,7 +375,11 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .auth-box{padding:32px 24px;}
   .motiv-banner{flex-wrap:wrap;}
   .template-bar{display:none;}
-  .week-table tbody tr{grid-template-columns:1fr 1fr;}
+  .week-table tbody tr{grid-template-columns:1fr !important;}
+  .week-table tbody tr td{border-radius:14px;border:1px solid var(--border);background:var(--white);}
+  .day-cell{min-height:auto;padding-bottom:4px;}
+  .table-wrap{background:transparent;border:none;box-shadow:none;}
+  .week-table{background:transparent;}
 }
 @media(max-width:420px){
   .week-table tbody tr{grid-template-columns:1fr;}
@@ -371,6 +389,110 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 }
 
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+
+/* ══ MOBILE DAY LABEL (shown inside each cell on mobile) ══ */
+.mobile-day-label {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 8px;
+  margin: -10px -8px 8px -8px;
+  border-bottom: 1px solid var(--border);
+}
+.mobile-day-label .mdl-left { display:flex; align-items:center; gap:10px; }
+.mobile-day-label .mdl-day {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.mobile-day-label .mdl-date {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.mobile-day-label .mdl-num {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 1;
+}
+.mobile-day-label .mdl-badge {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-weight: 700;
+}
+.mobile-day-label .mdl-add {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.mobile-day-label .mdl-add:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Today highlight for mobile label */
+.mobile-day-label.today-label { background: var(--ink); margin-bottom: 8px; border-radius: 8px; border-bottom: none; }
+.mobile-day-label.today-label .mdl-day,
+.mobile-day-label.today-label .mdl-date,
+.mobile-day-label.today-label .mdl-num { color: #fff !important; }
+.mobile-day-label.today-label .mdl-badge { background: rgba(255,255,255,.2); color: #fff; }
+.mobile-day-label.today-label .mdl-add { border-color: rgba(255,255,255,.3); color: #fff; }
+.mobile-day-label.today-label .mdl-add:hover { background: rgba(255,255,255,.2); }
+
+@media(max-width:768px) {
+  .mobile-day-label { display: flex; }
+  /* Hide the add button inside cell on mobile since it's in the label now */
+  .day-cell .add-task-btn { display: flex; }
+}
+
+/* ══ PWA INSTALL BANNER ══ */
+.pwa-banner{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  z-index:300;background:var(--ink);color:#fff;
+  border-radius:16px;padding:14px 20px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+  opacity:0;pointer-events:none;
+  transition:all .4s cubic-bezier(0.34,1.56,0.64,1);
+  max-width:340px;width:calc(100% - 32px);
+}
+.pwa-banner.show{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0);}
+.pwa-banner-icon{font-size:28px;flex-shrink:0;}
+.pwa-banner-text{flex:1;}
+.pwa-banner-title{font-family:'Fraunces',serif;font-weight:700;font-size:14px;margin-bottom:2px;}
+.pwa-banner-sub{font-size:11px;color:rgba(255,255,255,.6);}
+.pwa-banner-btn{background:linear-gradient(135deg,#FF6B6B,#FF9F43);border:none;border-radius:10px;padding:8px 14px;color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.pwa-banner-close{background:transparent;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;flex-shrink:0;padding:0 0 0 4px;}
+
+/* ══ OFFLINE BANNER ══ */
+.offline-bar{
+  position:fixed;top:0;left:0;right:0;z-index:400;
+  background:#FF6B6B;color:#fff;
+  text-align:center;padding:8px;font-size:12px;font-weight:600;
+  transform:translateY(-100%);transition:transform .3s ease;
+  letter-spacing:.3px;
+}
+.offline-bar.show{transform:translateY(0);}
+
+/* ══ SWIPE TO DELETE ══ */
+.swipe-wrap{position:relative;overflow:hidden;border-radius:9px;margin-bottom:0;}
+.swipe-delete-bg{
+  position:absolute;right:0;top:0;bottom:0;
+  background:linear-gradient(135deg,#FF6B6B,#ff4444);
+  display:flex;align-items:center;justify-content:flex-end;
+  padding-right:16px;border-radius:9px;
+  min-width:80px;
+}
+.swipe-delete-bg span{font-size:18px;}
+.cell-task{transition:transform .2s ease,box-shadow .15s,opacity .2s;touch-action:pan-y;}
 </style>
 </head>
 <body>
@@ -610,6 +732,20 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 <div class="toast" id="toast"></div>
 
+<!-- OFFLINE BAR -->
+<div class="offline-bar" id="offline-bar">📡 You are offline — your tasks are saved locally and will sync when you reconnect</div>
+
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwa-banner">
+  <div class="pwa-banner-icon">📅</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Install WeekFlow</div>
+    <div class="pwa-banner-sub">Add to home screen for the best experience</div>
+  </div>
+  <button class="pwa-banner-btn" id="pwa-install-btn">Install</button>
+  <button class="pwa-banner-close" id="pwa-banner-close">×</button>
+</div>
+
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -831,6 +967,25 @@ function render(){
     cell.className='day-cell';
     cell.dataset.day=i;
 
+    // ── Mobile day label (visible only on mobile) ──
+    const todayClass = isToday(date) ? 'today-label' : '';
+    const dayColor = DAY_COLOR_VALS[i];
+    const tasks_count = tasks.length;
+    const done_count = tasks.filter(t=>t.done).length;
+    const mobileLbl = document.createElement('div');
+    mobileLbl.className = `mobile-day-label ${todayClass}`;
+    mobileLbl.innerHTML = `
+      <div class="mdl-left">
+        <div class="mdl-num" style="${!isToday(date)?'color:'+dayColor:''}">${date.getDate()}</div>
+        <div>
+          <div class="mdl-day" style="${!isToday(date)?'color:'+dayColor:''}">${DAYS_FULL[i]}</div>
+          <div class="mdl-date">${date.toLocaleDateString('en-US',{month:'long',year:'numeric'})} · ${tasks_count} task${tasks_count!==1?'s':''} · ${done_count} done</div>
+        </div>
+      </div>
+      <button class="mdl-add" data-day="${i}" title="Add task">+</button>
+    `;
+    cell.appendChild(mobileLbl);
+
     // Drop zone
     cell.addEventListener('dragover',e=>{e.preventDefault();cell.classList.add('drag-over');});
     cell.addEventListener('dragleave',()=>cell.classList.remove('drag-over'));
@@ -868,7 +1023,53 @@ function render(){
         e.dataTransfer.setData('srcDay',i);
       });
       item.addEventListener('dragend',()=>item.classList.remove('dragging'));
-      cell.appendChild(item);
+
+      // ✅ FEATURE 17 — SWIPE TO DELETE
+      const swipeWrap=document.createElement('div');
+      swipeWrap.className='swipe-wrap';
+      const deleteBg=document.createElement('div');
+      deleteBg.className='swipe-delete-bg';
+      deleteBg.innerHTML='<span>🗑️</span>';
+      swipeWrap.appendChild(deleteBg);
+      swipeWrap.appendChild(item);
+
+      let touchStartX=0,touchCurrentX=0,swiping=false;
+      item.addEventListener('touchstart',e=>{
+        touchStartX=e.touches[0].clientX;
+        swiping=true;
+      },{passive:true});
+      item.addEventListener('touchmove',e=>{
+        if(!swiping)return;
+        touchCurrentX=e.touches[0].clientX;
+        const diff=touchCurrentX-touchStartX;
+        if(diff<0){
+          const move=Math.max(diff,-90);
+          item.style.transform=`translateX(${move}px)`;
+          deleteBg.style.opacity=Math.min(Math.abs(move)/80,1);
+        }
+      },{passive:true});
+      item.addEventListener('touchend',()=>{
+        if(!swiping)return;
+        swiping=false;
+        const diff=touchCurrentX-touchStartX;
+        if(diff<-70){
+          // Confirmed delete
+          haptic([50,30,100]);
+          item.style.transform='translateX(-100%)';
+          item.style.opacity='0';
+          setTimeout(()=>{
+            const tasks=(weekData[i]||[]).filter(x=>x.id!==task.id);
+            weekData[i]=tasks;saveDay(i,tasks);render();
+            showToast('🗑️ Task deleted');
+          },280);
+        } else {
+          item.style.transform='';
+          deleteBg.style.opacity='0';
+        }
+        touchStartX=0;touchCurrentX=0;
+      },{passive:true});
+
+      cell.appendChild(swipeWrap);
     });
 
     const addBtn=document.createElement('button');
@@ -886,6 +1087,7 @@ function render(){
       const t=tasks.find(x=>x.id===id);
       if(!t)return;
       t.done=!t.done;weekData[dayI]=tasks;
+      haptic(t.done?[40,20,40]:[20]);
       saveDay(dayI,tasks);render();
       // Check if all done for the day
       if(t.done&&tasks.every(x=>x.done)&&tasks.length>0){
@@ -902,6 +1104,11 @@ function render(){
       weekData[dayI]=tasks;saveDay(dayI,tasks);render();showToast('🗑️ Removed');
     });
   });
+  // Mobile day label + button
+  document.querySelectorAll('.mdl-add').forEach(btn=>{
+    btn.addEventListener('click',()=>{openDay=parseInt(btn.dataset.day);openModal(openDay);});
+  });
+
   document.querySelectorAll('.add-task-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{openDay=parseInt(btn.dataset.day);openModal(openDay);});
   });
@@ -1243,6 +1450,83 @@ function renderDashboard(){
 document.getElementById('mob-prev-week')?.addEventListener('click',()=>{weekOffset--;weekData={};listenWeek(weekKey(weekOffset));});
 document.getElementById('mob-next-week')?.addEventListener('click',()=>{weekOffset++;weekData={};listenWeek(weekKey(weekOffset));});
 document.getElementById('mob-today-btn')?.addEventListener('click',()=>{weekOffset=0;weekData={};listenWeek(weekKey(0));});
+
+// ══════════════════════════════════════════
+// ✅ FEATURE 15 — PWA SERVICE WORKER
+// ══════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js')
+      .then(reg=>console.log('SW registered:',reg.scope))
+      .catch(err=>console.log('SW failed:',err));
+  });
+}
+
+// ══════════════════════════════════════════
+// ✅ FEATURE 15 — INSTALL PROMPT (Add to Home Screen)
+// ══════════════════════════════════════════
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  // Show banner after 3 seconds
+  setTimeout(()=>{
+    const banner=document.getElementById('pwa-banner');
+    if(banner&&!localStorage.getItem('pwa-dismissed'))banner.classList.add('show');
+  },3000);
+});
+
+document.getElementById('pwa-install-btn')?.addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  const {outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted'){
+    showToast('🎉 WeekFlow installed! Check your home screen.');
+    document.getElementById('pwa-banner').classList.remove('show');
+  }
+  deferredPrompt=null;
+});
+
+document.getElementById('pwa-banner-close')?.addEventListener('click',()=>{
+  document.getElementById('pwa-banner').classList.remove('show');
+  localStorage.setItem('pwa-dismissed','1');
+});
+
+// Hide banner when already installed
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('pwa-banner')?.classList.remove('show');
+  showToast('✅ WeekFlow is now installed!');
+});
+
+// ══════════════════════════════════════════
+// ✅ FEATURE 16 — OFFLINE MODE DETECTION
+// ══════════════════════════════════════════
+function updateOnlineStatus(){
+  const bar=document.getElementById('offline-bar');
+  if(!bar)return;
+  if(!navigator.onLine){
+    bar.classList.add('show');
+    showToast('📡 You are offline — tasks will sync when reconnected');
+  } else {
+    bar.classList.remove('show');
+  }
+}
+window.addEventListener('online', ()=>{
+  updateOnlineStatus();
+  showToast('✅ Back online! Syncing your tasks...');
+  haptic([50,30,50]);
+});
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ══════════════════════════════════════════
+// ✅ FEATURE 18 — HAPTIC FEEDBACK
+// ══════════════════════════════════════════
+function haptic(pattern=[30]){
+  if('vibrate' in navigator){
+    try{ navigator.vibrate(pattern); }catch(e){}
+  }
+}
 </script>
 </body>
 </html>
