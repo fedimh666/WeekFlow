@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WeekFlow Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Offline font fallbacks — app stays beautiful even without internet */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 900;
+  src: local('Georgia'), local('Times New Roman');
+  size-adjust: 95%;
+}
+body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+</style>
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1A1208">
@@ -2115,14 +2126,13 @@ if(isInStandaloneMode) { markInstalled(); }
 // The 📲 Install button in the nav bar is ALWAYS visible — it cannot be dismissed
 
 // ══════════════════════════════════════════
-// ✅ FEATURE 16 — OFFLINE MODE DETECTION
+// ✅ OFFLINE MODE — full detection & messaging
 // ══════════════════════════════════════════
 function updateOnlineStatus(){
   const bar=document.getElementById('offline-bar');
   if(!bar)return;
   if(!navigator.onLine){
     bar.classList.add('show');
-    showToast('📡 You are offline — tasks will sync when reconnected');
   } else {
     bar.classList.remove('show');
   }
@@ -2131,8 +2141,13 @@ window.addEventListener('online', ()=>{
   updateOnlineStatus();
   showToast('✅ Back online! Syncing your tasks...');
   haptic([50,30,50]);
+  // Re-sync Firebase data when back online
+  if(currentUser) listenWeek(weekKey(weekOffset));
 });
-window.addEventListener('offline', updateOnlineStatus);
+window.addEventListener('offline', ()=>{
+  updateOnlineStatus();
+  showToast('📡 Offline — app works, data saves when reconnected');
+});
 updateOnlineStatus();
 
 // ══════════════════════════════════════════

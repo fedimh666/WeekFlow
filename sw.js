@@ -1,65 +1,115 @@
-// WeekFlow Pro — Service Worker v5
-// ⚡ AUTO-UPDATE: version bumps automatically force refresh on all devices
-const CACHE_NAME = 'weekflow-v5';
-const ASSETS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+// WeekFlow Pro — Service Worker v6
+// ⚡ FULL OFFLINE SUPPORT — app works completely without internet
+const CACHE_NAME = 'weekflow-v6';
+const FONT_CACHE = 'weekflow-fonts-v1';
 
-// INSTALL — cache all assets
+// Core app files to cache immediately on install
+const CORE_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
+];
+
+// Google Fonts to cache for offline use
+const FONT_URLS = [
+  'https://fonts.googleapis.com/css2?family=Fraunces:wght@300;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap'
+];
+
+// ── INSTALL: cache all core files ──────────
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(c => c.addAll(ASSETS).catch(() => {}))
+    Promise.all([
+      // Cache core app files
+      caches.open(CACHE_NAME).then(c =>
+        c.addAll(CORE_ASSETS).catch(err => console.warn('Core cache partial:', err))
+      ),
+      // Cache fonts
+      caches.open(FONT_CACHE).then(c =>
+        Promise.all(FONT_URLS.map(url =>
+          fetch(url).then(res => c.put(url, res)).catch(() => {})
+        ))
+      )
+    ])
   );
-  // ⚡ Skip waiting — activate immediately without waiting for old tabs to close
   self.skipWaiting();
 });
 
-// ACTIVATE — delete old caches immediately
+// ── ACTIVATE: clean up old caches ──────────
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => {
-      // ⚡ Take control of ALL open tabs immediately
-      return self.clients.claim();
-    })
+      Promise.all(
+        keys
+          .filter(k => k !== CACHE_NAME && k !== FONT_CACHE)
+          .map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
   );
+
+  // Notify all tabs that app updated
+  self.clients.matchAll({ type: 'window' }).then(clients => {
+    clients.forEach(c => c.postMessage({ type: 'SW_UPDATED' }));
+  });
 });
 
-// FETCH — serve from cache, fall back to network
+// ── FETCH: smart caching strategy ──────────
 self.addEventListener('fetch', e => {
-  // Skip Firebase, Google APIs, external requests
+  const url = e.request.url;
+
+  // Skip non-GET requests
+  if (e.request.method !== 'GET') return;
+
+  // ── FONTS: cache-first (fonts don't change) ──
+  if (url.includes('fonts.googleapis.com') || url.includes('fonts.gstatic.com')) {
+    e.respondWith(
+      caches.open(FONT_CACHE).then(cache =>
+        cache.match(e.request).then(cached => {
+          if (cached) return cached;
+          return fetch(e.request).then(res => {
+            cache.put(e.request, res.clone());
+            return res;
+          }).catch(() => cached);
+        })
+      )
+    );
+    return;
+  }
+
+  // ── FIREBASE & external APIs: network-only, never cache ──
   if (
-    e.request.url.includes('firebase') ||
-    e.request.url.includes('googleapis') ||
-    e.request.url.includes('gstatic') ||
-    e.request.url.includes('anthropic') ||
-    e.request.url.includes('generativelanguage') ||
-    e.request.method !== 'GET'
-  ) return;
+    url.includes('firestore.googleapis.com') ||
+    url.includes('firebase') ||
+    url.includes('gstatic.com/firebasejs') ||
+    url.includes('generativelanguage') ||
+    url.includes('identitytoolkit')
+  ) {
+    // Just let it go through — Firebase handles its own offline caching
+    return;
+  }
 
+  // ── APP SHELL: cache-first, update in background ──
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      // Always fetch fresh from network in background
-      const networkFetch = fetch(e.request).then(res => {
-        if (res.status === 200) {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+    caches.open(CACHE_NAME).then(cache =>
+      cache.match(e.request).then(cached => {
+        // Fetch fresh version in background and update cache
+        const networkFetch = fetch(e.request).then(res => {
+          if (res && res.status === 200) {
+            cache.put(e.request, res.clone());
+          }
+          return res;
+        }).catch(() => null);
+
+        // Return cache immediately if available, otherwise wait for network
+        if (cached) {
+          // Still update in background
+          networkFetch;
+          return cached;
         }
-        return res;
-      }).catch(() => cached);
-
-      // Return cache immediately (fast), update in background
-      return cached || networkFetch;
-    })
-  );
-});
-
-// ⚡ NOTIFY all open tabs when a new version is available
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    self.clients.matchAll({ type: 'window' }).then(clients => {
-      clients.forEach(client => {
-        client.postMessage({ type: 'SW_UPDATED' });
-      });
-    })
+        // No cache — must use network (or show offline fallback)
+        return networkFetch || cache.match('/index.html');
+      })
+    )
   );
 });
