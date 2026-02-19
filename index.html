@@ -655,37 +655,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </div>
 
 <!-- APP -->
-<!-- PERMANENT INSTALL BUTTON — outside app, always visible on mobile -->
-<button id="permanent-install-btn" onclick="window.triggerInstall && triggerInstall()" style="
-  display:none;
-  position:fixed;
-  bottom:16px;
-  right:16px;
-  z-index:9999;
-  background:linear-gradient(135deg,#FF6B6B,#FF9F43);
-  color:#fff;
-  border:none;
-  border-radius:99px;
-  padding:13px 20px;
-  font-family:'Fraunces',serif;
-  font-weight:700;
-  font-size:14px;
-  cursor:pointer;
-  box-shadow:0 4px 20px rgba(255,107,107,.5);
-  align-items:center;
-  gap:8px;
-  animation:permInstallPulse 2s ease infinite;
-  -webkit-tap-highlight-color:transparent;
-">📲 Install App</button>
-<style>
-@keyframes permInstallPulse{0%,100%{box-shadow:0 4px 20px rgba(255,107,107,.5);}50%{box-shadow:0 4px 32px rgba(255,107,107,.9);}}
-@media(max-width:768px){
-  #permanent-install-btn{display:flex !important;}
-}
-/* hide when app is visible and has nav (nav has its own install btn) */
-#app.visible ~ #permanent-install-btn,
-.app-has-nav #permanent-install-btn { display:none !important; }
-</style>
 
 <div id="app">
   <!-- TOPBAR -->
@@ -945,51 +914,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <button class="pwa-banner-close" id="pwa-banner-close">×</button>
 </div>
 
-<!-- INSTALL BUTTON SCRIPT - runs immediately, before Firebase, always works -->
-<script>
-// Show install button immediately on mobile — no waiting
-(function() {
-  var btn = document.getElementById('permanent-install-btn');
-  if (!btn) return;
-  
-  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if (isStandalone) { btn.style.display = 'none'; return; }
-  
-  var deferredPrompt = null;
-  
-  window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
-  
-  window.triggerInstall = async function() {
-    if (window.haptic) haptic([30]);
-    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    if (isStandalone) { if(window.showToast) showToast('✅ Already installed!'); return; }
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      var result = await deferredPrompt.userChoice;
-      if (result.outcome === 'accepted') {
-        if(window.showToast) showToast('🎉 WeekFlow installed!');
-        deferredPrompt = null;
-        btn.style.display = 'none';
-      }
-    } else {
-      // Show instructions for iOS/Firefox/Samsung
-      var modal = document.getElementById('ios-modal');
-      if (modal) modal.classList.add('show');
-      else alert('📲 To install:\n\niPhone Safari: Tap Share ⬆️ → Add to Home Screen\n\nAndroid Chrome: Tap menu ⋮ → Add to Home screen');
-    }
-  };
-  
-  btn.addEventListener('click', function() { window.triggerInstall(); });
-  
-  window.addEventListener('appinstalled', function() {
-    btn.style.display = 'none';
-    if(window.showToast) showToast('🎉 Installed on home screen!');
-  });
-})();
-</script>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -1134,9 +1058,7 @@ onAuthStateChanged(auth,async user=>{
     currentUser=user;
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
-    // Hide floating install btn since nav bar has its own install button
-    var permBtn = document.getElementById('permanent-install-btn');
-    if(permBtn) permBtn.style.display = 'none';
+
     const name=user.displayName||user.email.split('@')[0];
     document.getElementById('tb-name').textContent=name;
     const av=document.getElementById('tb-avatar');
