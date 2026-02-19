@@ -1326,27 +1326,29 @@ function render(){
       swipeWrap.appendChild(deleteBg);
       swipeWrap.appendChild(item);
 
-      let touchStartX=0,touchCurrentX=0,swiping=false;
+      let touchStartX=0,touchCurrentX=0,touchStartY=0,didSwipe=false;
       item.addEventListener('touchstart',e=>{
         touchStartX=e.touches[0].clientX;
-        swiping=true;
+        touchStartY=e.touches[0].clientY;
+        touchCurrentX=e.touches[0].clientX;
+        didSwipe=false;
       },{passive:true});
       item.addEventListener('touchmove',e=>{
-        if(!swiping)return;
         touchCurrentX=e.touches[0].clientX;
-        const diff=touchCurrentX-touchStartX;
-        if(diff<0){
-          const move=Math.max(diff,-90);
+        const diffX=touchCurrentX-touchStartX;
+        const diffY=e.touches[0].clientY-touchStartY;
+        // Only activate swipe if moving LEFT and horizontal movement dominates
+        if(diffX < -15 && Math.abs(diffX) > Math.abs(diffY)){
+          didSwipe=true;
+          const move=Math.max(diffX,-90);
           item.style.transform=`translateX(${move}px)`;
           deleteBg.style.opacity=Math.min(Math.abs(move)/80,1);
         }
       },{passive:true});
       item.addEventListener('touchend',()=>{
-        if(!swiping)return;
-        swiping=false;
         const diff=touchCurrentX-touchStartX;
-        if(diff<-70){
-          // Confirmed delete
+        if(didSwipe && diff<-70){
+          // Confirmed swipe-to-delete
           haptic([50,30,100]);
           item.style.transform='translateX(-100%)';
           item.style.opacity='0';
@@ -1356,10 +1358,13 @@ function render(){
             showToast('🗑️ Task deleted');
           },280);
         } else {
+          // Normal tap or short swipe — snap back, do NOT delete
+          item.style.transition='transform 0.2s ease';
           item.style.transform='';
           deleteBg.style.opacity='0';
+          setTimeout(()=>{ item.style.transition=''; },200);
         }
-        touchStartX=0;touchCurrentX=0;
+        touchStartX=0;touchCurrentX=0;touchStartY=0;didSwipe=false;
       },{passive:true});
 
       cell.appendChild(swipeWrap);
