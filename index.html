@@ -1633,59 +1633,70 @@ if('serviceWorker' in navigator){
 // ✅ PWA INSTALL — ALWAYS VISIBLE ON ALL DEVICES
 // ══════════════════════════════════════════
 let deferredPrompt = null;
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-function markInstalled() {
+// If already installed as app — update button to show checkmark
+if (isInStandaloneMode) {
   const navBtn = document.getElementById('mob-install-btn');
-  if(navBtn) {
+  if (navBtn) {
     navBtn.querySelector('.mn-icon').textContent = '✅';
-    navBtn.querySelector('.mn-label').textContent = 'Installed!';
+    navBtn.querySelector('.mn-label').textContent = 'Installed';
     navBtn.style.opacity = '0.5';
     navBtn.style.pointerEvents = 'none';
   }
-  document.getElementById('install-fab')?.classList.add('hidden');
-  document.getElementById('tb-install-btn')?.classList.add('hidden');
-  document.getElementById('pwa-banner')?.classList.remove('show');
 }
 
-window.triggerInstall = async function() {
+// Catch native Chrome/Edge install prompt (desktop + some Android Chrome)
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+// MAIN INSTALL FUNCTION — works on EVERY browser and device
+window.triggerInstall = async function () {
   haptic([30]);
-  if(isInStandaloneMode) { showToast('✅ Already installed!'); return; }
-  if(deferredPrompt) {
+  if (isInStandaloneMode) {
+    showToast('✅ WeekFlow is already installed!');
+    return;
+  }
+  if (deferredPrompt) {
+    // Chrome desktop and some Android Chrome — use native prompt
     deferredPrompt.prompt();
-    const {outcome} = await deferredPrompt.userChoice;
-    if(outcome === 'accepted') { showToast('🎉 WeekFlow installed!'); deferredPrompt = null; }
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      showToast('🎉 WeekFlow installed!');
+      deferredPrompt = null;
+    }
   } else {
-    // iOS and all other browsers — show step-by-step instructions
+    // iPhone Safari, Firefox, Samsung, ALL other browsers
+    // Show the step-by-step instructions modal
     document.getElementById('ios-modal')?.classList.add('show');
   }
 };
 
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  setTimeout(() => { document.getElementById('pwa-banner')?.classList.add('show'); }, 3000);
-});
-
-['install-fab','tb-install-btn','pwa-install-btn','mob-install-btn'].forEach(id => {
+// Wire ALL install buttons to triggerInstall
+['mob-install-btn', 'install-fab', 'tb-install-btn', 'pwa-install-btn'].forEach(id => {
   document.getElementById(id)?.addEventListener('click', () => window.triggerInstall());
 });
 
+// Dismiss floating banner (but nav button stays always!)
 document.getElementById('pwa-banner-close')?.addEventListener('click', () => {
   document.getElementById('pwa-banner')?.classList.remove('show');
 });
 
+// When installed via native Chrome prompt
 window.addEventListener('appinstalled', () => {
-  markInstalled();
-  showToast('🎉 WeekFlow installed on your home screen!');
-  haptic([50,30,100]);
+  showToast('🎉 WeekFlow is now on your home screen!');
+  haptic([50, 30, 100]);
+  const navBtn = document.getElementById('mob-install-btn');
+  if (navBtn) {
+    navBtn.querySelector('.mn-icon').textContent = '✅';
+    navBtn.querySelector('.mn-label').textContent = 'Installed';
+    navBtn.style.opacity = '0.5';
+    navBtn.style.pointerEvents = 'none';
+  }
 });
 
-if(isInStandaloneMode) { markInstalled(); }
-// The 📲 Install button in the nav bar is ALWAYS visible — it cannot be dismissed
-
-// ══════════════════════════════════════════
 // ✅ FEATURE 16 — OFFLINE MODE DETECTION
 // ══════════════════════════════════════════
 function updateOnlineStatus(){
