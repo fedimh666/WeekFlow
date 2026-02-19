@@ -1818,7 +1818,14 @@ function haptic(pattern=[30]){
 // 🤖 GEMINI AI FEATURES
 // ══════════════════════════════════════════
 const GEMINI_API_KEY = 'AIzaSyDdSAQajcyt2BXrrLrXohAu-oh51erpzt8';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+// Try models in order until one works
+const GEMINI_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-pro'
+];
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 let aiGeneratedTasks = []; // store generated tasks for adding to planner
 
@@ -1827,17 +1834,40 @@ function renderAIPage() {
 }
 
 async function callGemini(prompt) {
-  const res = await fetch(GEMINI_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
-    })
-  });
-  if (!res.ok) throw new Error('Gemini API error: ' + res.status);
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const models = [
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-latest',
+    'gemini-pro'
+  ];
+  
+  let lastError = null;
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
+        })
+      });
+      if (res.status === 404) { lastError = '404 - model not found'; continue; }
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        lastError = errData.error?.message || 'HTTP ' + res.status;
+        continue;
+      }
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (text) return text;
+    } catch(e) {
+      lastError = e.message;
+      continue;
+    }
+  }
+  throw new Error('All Gemini models failed. Last error: ' + lastError);
 }
 
 // ── FEATURE 1: AI Task Generator ──────────
@@ -1980,7 +2010,8 @@ window.generateSummary = async function() {
         const doneTasks = tasks.filter(t => t.done);
         weekInfo += `${days[i]}: ${doneTasks.length}/${tasks.length} tasks done`;
         if (tasks.length) weekInfo += ` (${tasks.slice(0,2).map(t=>t.text).join(', ')}${tasks.length>2?'...':''})`;
-        weekInfo += '';
+        weekInfo += '
+';
         total += tasks.length; done += doneTasks.length;
       }
     }
