@@ -1921,10 +1921,35 @@ document.getElementById('mob-today-btn')?.addEventListener('click',()=>{weekOffs
 // ✅ FEATURE 15 — PWA SERVICE WORKER
 // ══════════════════════════════════════════
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js')
-      .then(reg=>console.log('SW registered:',reg.scope))
-      .catch(err=>console.log('SW failed:',err));
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js');
+      console.log('SW registered:', reg.scope);
+
+      // ⚡ Check for updates every 60 seconds
+      setInterval(() => reg.update(), 60000);
+
+      // ⚡ When a new SW is waiting — reload automatically
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated') {
+            showToast('🔄 App updated! Reloading...');
+            setTimeout(() => window.location.reload(), 1500);
+          }
+        });
+      });
+    } catch(err) {
+      console.log('SW failed:', err);
+    }
+  });
+
+  // Listen for SW_UPDATED message from service worker
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SW_UPDATED') {
+      showToast('✅ App updated to latest version!');
+      setTimeout(() => window.location.reload(), 1500);
+    }
   });
 }
 
