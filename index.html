@@ -2006,8 +2006,7 @@ window.generateSummary = async function() {
         const doneTasks = tasks.filter(t => t.done);
         weekInfo += `${days[i]}: ${doneTasks.length}/${tasks.length} tasks done`;
         if (tasks.length) weekInfo += ` (${tasks.slice(0,2).map(t=>t.text).join(', ')}${tasks.length>2?'...':''})`;
-        weekInfo += '
-';
+        weekInfo += '';
         total += tasks.length; done += doneTasks.length;
       }
     }
