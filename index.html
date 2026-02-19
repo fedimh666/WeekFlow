@@ -618,6 +618,45 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 }
 .swipe-delete-bg span{font-size:18px;}
 .cell-task{transition:transform .2s ease,box-shadow .15s,opacity .2s;touch-action:pan-y;}
+
+/* ══ AI PAGE ══ */
+.ai-layout{display:flex;flex-direction:column;gap:20px;}
+.ai-card{background:var(--white);border-radius:18px;border:1px solid var(--border);box-shadow:var(--shadow);padding:28px;}
+.ai-card-header{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.ai-card-icon{font-size:32px;}
+.ai-card-title{font-family:'Fraunces',serif;font-size:20px;font-weight:900;}
+.ai-card-sub{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.ai-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;resize:vertical;min-height:80px;}
+.ai-input:focus{border-color:var(--ink);}
+.ai-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#a29bfe,#6c5ce7);color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;margin-top:12px;}
+.ai-btn:hover{opacity:.88;transform:translateY(-1px);}
+.ai-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.ai-btn.loading::after{content:'';width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-left:4px;}
+.ai-result{margin-top:16px;background:linear-gradient(135deg,rgba(162,155,254,.08),rgba(108,92,231,.05));border:1px solid rgba(162,155,254,.3);border-radius:12px;padding:18px;display:none;}
+.ai-result.show{display:block;}
+.ai-result-title{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#6c5ce7;font-weight:700;margin-bottom:12px;}
+.ai-result-text{font-size:13px;color:var(--ink);line-height:1.7;}
+.ai-task-list{display:flex;flex-direction:column;gap:8px;}
+.ai-task-day{font-family:'Fraunces',serif;font-size:13px;font-weight:700;color:var(--ink);margin-top:10px;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.ai-task-day:first-child{margin-top:0;}
+.ai-task-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--white);border-radius:9px;border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .2s;}
+.ai-task-item:hover{border-color:#a29bfe;background:rgba(162,155,254,.05);}
+.ai-task-item-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.ai-task-item.selected{border-color:#a29bfe;background:rgba(162,155,254,.1);}
+.ai-task-item.selected .ai-task-item-check{background:#a29bfe;border-color:#a29bfe;color:#fff;}
+.ai-task-text{flex:1;font-weight:600;color:var(--ink);}
+.ai-task-cat{font-size:9px;padding:2px 7px;border-radius:99px;font-weight:700;background:rgba(162,155,254,.15);color:#6c5ce7;}
+.ai-add-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--ink);color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:14px;cursor:pointer;transition:opacity .2s;margin-top:12px;display:none;}
+.ai-add-btn.show{display:block;}
+.ai-add-btn:hover{opacity:.85;}
+.suggestion-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.suggestion-chip{padding:8px 14px;border-radius:99px;border:1.5px solid rgba(162,155,254,.4);background:rgba(162,155,254,.08);font-size:12px;font-weight:600;color:#6c5ce7;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.suggestion-chip:hover{background:rgba(162,155,254,.2);border-color:#a29bfe;}
+.summary-result{font-family:'Fraunces',serif;font-size:16px;font-style:italic;line-height:1.7;color:var(--ink);text-align:center;padding:8px;}
+/* AI tab in nav */
+#mob-tab-ai .mn-icon{background:linear-gradient(135deg,#a29bfe,#6c5ce7);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;margin:0 auto;}
+#mob-tab-ai .mn-label{color:#6c5ce7;font-weight:700;}
+#tab-ai.active{background:var(--white);color:#6c5ce7 !important;}
 </style>
 </head>
 <body>
@@ -665,6 +704,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="tb-tab" onclick="showPage('dashboard')" id="tab-dashboard">📊 Dashboard</button>
       <button class="tb-tab" onclick="showPage('templates')" id="tab-templates">📋 Templates</button>
       <button class="tb-tab" onclick="showPage('notifications')" id="tab-notifications">🔔 Reminders</button>
+      <button class="tb-tab" onclick="showPage('ai')" id="tab-ai">🤖 AI Assistant</button>
     </div>
     <div class="tb-week-nav">
       <button class="tb-nav-btn" id="prev-week">◀</button>
@@ -821,6 +861,50 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     </div>
   </div>
 
+  <!-- ══ AI ASSISTANT PAGE ══ -->
+  <div class="page" id="page-ai">
+    <div class="dash-header">
+      <div class="dash-title">🤖 AI Assistant</div>
+      <div class="dash-sub">Powered by Gemini — your free AI productivity coach.</div>
+    </div>
+    <div class="ai-layout">
+      <div class="ai-card">
+        <div class="ai-card-header"><div class="ai-card-icon">✨</div><div><div class="ai-card-title">AI Task Generator</div></div></div>
+        <div class="ai-card-sub">Describe your week — AI breaks it into daily tasks automatically.</div>
+        <textarea class="ai-input" id="ai-gen-input" placeholder="e.g. I have a job interview on Thursday, need to prepare my portfolio..."></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <button class="suggestion-chip" onclick="document.getElementById('ai-gen-input').value='Job interview prep this week';generateTasks()">💼 Job interview prep</button>
+          <button class="suggestion-chip" onclick="document.getElementById('ai-gen-input').value='Start a workout routine';generateTasks()">🏃 Workout routine</button>
+          <button class="suggestion-chip" onclick="document.getElementById('ai-gen-input').value='Study for exams next week';generateTasks()">📚 Study for exams</button>
+        </div>
+        <button class="ai-btn" id="ai-gen-btn" onclick="generateTasks()">✨ Generate My Week</button>
+        <div class="ai-result" id="ai-gen-result">
+          <div class="ai-result-title">✨ Tap tasks to select, then add to planner</div>
+          <div class="ai-task-list" id="ai-task-list"></div>
+          <button class="ai-add-btn" id="ai-add-selected-btn" onclick="addSelectedTasks()">➕ Add Selected Tasks to Planner</button>
+        </div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-card-header"><div class="ai-card-icon">📝</div><div><div class="ai-card-title">Weekly Summary</div></div></div>
+        <div class="ai-card-sub">Get a motivational summary of your week — what you achieved and encouragement to keep going.</div>
+        <button class="ai-btn" id="ai-summary-btn" onclick="generateSummary()" style="background:linear-gradient(135deg,#FF9F43,#FF6B6B);">📝 Generate My Weekly Summary</button>
+        <div class="ai-result" id="ai-summary-result">
+          <div class="ai-result-title">📝 Your Weekly Summary</div>
+          <div class="summary-result" id="ai-summary-text"></div>
+        </div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-card-header"><div class="ai-card-icon">💡</div><div><div class="ai-card-title">Smart Suggestions</div></div></div>
+        <div class="ai-card-sub">AI analyzes your tasks and suggests what you might be missing.</div>
+        <button class="ai-btn" id="ai-suggest-btn" onclick="getSmartSuggestions()" style="background:linear-gradient(135deg,#26de81,#20bf6b);">💡 Get Smart Suggestions</button>
+        <div class="ai-result" id="ai-suggest-result">
+          <div class="ai-result-title">💡 Tap any suggestion to add it instantly</div>
+          <div class="suggestion-chips" id="ai-suggest-chips"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Install FAB (hidden on mobile, shown on desktop) -->
   <button class="install-fab hidden" id="install-fab">
     <span class="fab-icon">📲</span> Install App
@@ -876,6 +960,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="mobile-nav-btn" id="mob-tab-notifications" onclick="showPage('notifications')">
         <span class="mn-icon">🔔</span>
         <span class="mn-label">Reminders</span>
+      </button>
+      <button class="mobile-nav-btn" id="mob-tab-ai" onclick="showPage('ai')">
+        <span class="mn-icon">🤖</span>
+        <span class="mn-label">AI</span>
       </button>
       <button class="mobile-nav-btn" id="mob-install-btn" onclick="triggerInstall()">
         <span class="mn-icon">📲</span>
@@ -1094,6 +1182,7 @@ window.showPage=function(page){
   if(page==='dashboard'){renderDashboard();}
   if(page==='templates'){renderTemplatesPage();}
   if(page==='notifications'){renderNotifLog();}
+  if(page==='ai'){renderAIPage();}
 };
 
 // ══ RENDER PLANNER ═════════════════════════
@@ -1728,6 +1817,300 @@ function haptic(pattern=[30]){
     try{ navigator.vibrate(pattern); }catch(e){}
   }
 }
+
+// ══════════════════════════════════════════
+// 🤖 GEMINI AI FEATURES
+// ══════════════════════════════════════════
+const GEMINI_API_KEY = 'AIzaSyDdSAQajcyt2BXrrLrXohAu-oh51erpzt8';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+let aiGeneratedTasks = []; // store generated tasks for adding to planner
+
+function renderAIPage() {
+  // Nothing to pre-render — all on-demand
+}
+
+async function callGemini(prompt) {
+  const res = await fetch(GEMINI_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
+    })
+  });
+  if (!res.ok) throw new Error('Gemini API error: ' + res.status);
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+// ── FEATURE 1: AI Task Generator ──────────
+window.generateTasks = async function() {
+  const input = document.getElementById('ai-gen-input').value.trim();
+  if (!input) { showToast('⚠️ Please describe your week first!'); return; }
+
+  const btn = document.getElementById('ai-gen-btn');
+  btn.disabled = true; btn.classList.add('loading');
+  btn.textContent = 'Generating...';
+
+  try {
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    const prompt = `You are a productivity assistant. The user says: "${input}"
+    
+Break this into specific daily tasks for the week. Return ONLY valid JSON like this example:
+{"tasks":[{"day":"Monday","text":"Research company background","category":"work","priority":"high"},{"day":"Tuesday","text":"Practice interview answers","category":"work","priority":"high"},{"day":"Wednesday","text":"Prepare outfit and documents","category":"personal","priority":"medium"}]}
+
+Rules:
+- day must be one of: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+- category must be one of: work, personal, shopping, health
+- priority must be one of: high, medium, low
+- text should be specific and actionable (max 50 chars)
+- Create 5-12 tasks spread across relevant days
+- Return ONLY the JSON, no markdown, no explanation`;
+
+    const raw = await callGemini(prompt);
+    
+    // Parse JSON from response
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Invalid response format');
+    const parsed = JSON.parse(jsonMatch[0]);
+    const tasks = parsed.tasks || [];
+
+    if (!tasks.length) throw new Error('No tasks generated');
+
+    // Store and render
+    aiGeneratedTasks = tasks.map(t => ({
+      ...t,
+      id: Math.random().toString(36).slice(2),
+      dayIndex: days.indexOf(t.day),
+      selected: true
+    })).filter(t => t.dayIndex >= 0);
+
+    renderGeneratedTasks();
+    document.getElementById('ai-gen-result').classList.add('show');
+    showToast('✨ ' + aiGeneratedTasks.length + ' tasks generated!');
+
+  } catch(e) {
+    console.error(e);
+    showToast('❌ Error: ' + (e.message || 'Try again'));
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = '✨ Generate My Week';
+  }
+};
+
+function renderGeneratedTasks() {
+  const list = document.getElementById('ai-task-list');
+  const addBtn = document.getElementById('ai-add-selected-btn');
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dayColors = ['#FF6B6B','#FF9F43','#f0c040','#26de81','#45aaf2','#a29bfe','#fd79a8'];
+  const dayEmojis = ['🔴','🟠','🟡','🟢','🔵','🟣','🩷'];
+
+  // Group by day
+  const byDay = {};
+  aiGeneratedTasks.forEach(t => {
+    if (!byDay[t.dayIndex]) byDay[t.dayIndex] = [];
+    byDay[t.dayIndex].push(t);
+  });
+
+  list.innerHTML = '';
+  Object.keys(byDay).sort((a,b)=>a-b).forEach(dayIdx => {
+    const dayLabel = document.createElement('div');
+    dayLabel.className = 'ai-task-day';
+    dayLabel.innerHTML = `${dayEmojis[dayIdx]} ${days[dayIdx]}`;
+    dayLabel.style.color = dayColors[dayIdx];
+    list.appendChild(dayLabel);
+
+    byDay[dayIdx].forEach(task => {
+      const item = document.createElement('div');
+      item.className = 'ai-task-item' + (task.selected ? ' selected' : '');
+      item.dataset.id = task.id;
+      item.innerHTML = `
+        <div class="ai-task-item-check">${task.selected ? '✓' : ''}</div>
+        <div class="ai-task-text">${task.text}</div>
+        <span class="ai-task-cat">${task.category}</span>
+      `;
+      item.addEventListener('click', () => {
+        task.selected = !task.selected;
+        renderGeneratedTasks();
+      });
+      list.appendChild(item);
+    });
+  });
+
+  const selectedCount = aiGeneratedTasks.filter(t => t.selected).length;
+  addBtn.textContent = `➕ Add ${selectedCount} Selected Tasks to Planner`;
+  addBtn.className = 'ai-add-btn' + (selectedCount > 0 ? ' show' : '');
+}
+
+window.addSelectedTasks = async function() {
+  const selected = aiGeneratedTasks.filter(t => t.selected);
+  if (!selected.length) { showToast('⚠️ Select at least one task!'); return; }
+
+  for (const task of selected) {
+    const dayTasks = [...(weekData[task.dayIndex] || [])];
+    dayTasks.push({
+      id: task.id,
+      text: task.text,
+      cat: task.category,
+      priority: task.priority,
+      done: false
+    });
+    weekData[task.dayIndex] = dayTasks;
+    await saveDay(task.dayIndex, dayTasks);
+  }
+
+  render();
+  showToast('🎉 ' + selected.length + ' tasks added to your planner!');
+  haptic([40, 20, 80]);
+  showPage('planner');
+};
+
+// ── FEATURE 2: Weekly Summary ──────────────
+window.generateSummary = async function() {
+  const btn = document.getElementById('ai-summary-btn');
+  btn.disabled = true; btn.classList.add('loading');
+  btn.textContent = 'Writing...';
+
+  try {
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    let weekInfo = '';
+    let total = 0, done = 0;
+
+    for (let i = 0; i < 7; i++) {
+      const tasks = weekData[i] || [];
+      if (tasks.length) {
+        const doneTasks = tasks.filter(t => t.done);
+        weekInfo += `${days[i]}: ${doneTasks.length}/${tasks.length} tasks done`;
+        if (tasks.length) weekInfo += ` (${tasks.slice(0,2).map(t=>t.text).join(', ')}${tasks.length>2?'...':''})`;
+        weekInfo += '';
+        total += tasks.length; done += doneTasks.length;
+      }
+    }
+
+    if (!total) {
+      showToast('⚠️ Add some tasks first to get a summary!');
+      return;
+    }
+
+    const pct = Math.round(done/total*100);
+    const prompt = `You are an encouraging productivity coach. Here is the user's week:
+
+${weekInfo}
+Overall: ${done}/${total} tasks completed (${pct}%)
+
+Write a SHORT motivational summary (3-4 sentences max) that:
+1. Acknowledges what they accomplished specifically
+2. Notes what's still pending with encouragement
+3. Ends with one powerful motivational sentence
+
+Be warm, personal, and specific. Do NOT use bullet points. Write as flowing text.`;
+
+    const summary = await callGemini(prompt);
+    document.getElementById('ai-summary-text').textContent = summary.trim();
+    document.getElementById('ai-summary-result').classList.add('show');
+    showToast('📝 Summary ready!');
+
+  } catch(e) {
+    showToast('❌ Error generating summary. Try again!');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = '📝 Generate My Weekly Summary';
+  }
+};
+
+// ── FEATURE 3: Smart Suggestions ──────────
+window.getSmartSuggestions = async function() {
+  const btn = document.getElementById('ai-suggest-btn');
+  btn.disabled = true; btn.classList.add('loading');
+  btn.textContent = 'Analyzing...';
+
+  try {
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    let taskList = '';
+    let hasAny = false;
+
+    for (let i = 0; i < 7; i++) {
+      const tasks = weekData[i] || [];
+      if (tasks.length) {
+        hasAny = true;
+        taskList += `${days[i]}: ${tasks.map(t=>t.text).join(', ')}
+`;
+      }
+    }
+
+    if (!hasAny) taskList = 'No tasks yet this week.';
+
+    const prompt = `You are a productivity assistant. The user has these tasks this week:
+${taskList}
+
+Suggest 6 short tasks they might be missing. Think about: daily habits, health, follow-ups, planning, self-care, things commonly forgotten.
+
+Return ONLY valid JSON:
+{"suggestions":[{"text":"Drink 8 glasses of water","category":"health","priority":"medium","day":"Monday"},{"text":"Reply to pending emails","category":"work","priority":"high","day":"Tuesday"}]}
+
+Rules:
+- text max 45 characters, be specific and actionable
+- category: work, personal, shopping, or health
+- priority: high, medium, or low  
+- day: a day of the week
+- Return ONLY JSON, no markdown`;
+
+    const raw = await callGemini(prompt);
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Invalid format');
+    const parsed = JSON.parse(jsonMatch[0]);
+    const suggestions = parsed.suggestions || [];
+
+    const container = document.getElementById('ai-suggest-chips');
+    container.innerHTML = '';
+
+    const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+    suggestions.forEach(s => {
+      const chip = document.createElement('button');
+      chip.className = 'suggestion-chip';
+      chip.innerHTML = `➕ ${s.text} <span style="font-size:10px;opacity:.6;">(${s.day})</span>`;
+      chip.addEventListener('click', async () => {
+        const dayIdx = dayNames.indexOf(s.day);
+        const targetDay = dayIdx >= 0 ? dayIdx : 0;
+        const tasks = [...(weekData[targetDay] || [])];
+        tasks.push({
+          id: Date.now().toString(36),
+          text: s.text,
+          cat: s.category || 'personal',
+          priority: s.priority || 'medium',
+          done: false
+        });
+        weekData[targetDay] = tasks;
+        await saveDay(targetDay, tasks);
+        chip.style.background = 'rgba(38,222,129,.2)';
+        chip.style.borderColor = '#26de81';
+        chip.style.color = '#20bf6b';
+        chip.innerHTML = '✅ ' + s.text;
+        chip.disabled = true;
+        showToast('✅ Added to ' + dayNames[targetDay] + '!');
+        haptic([30]);
+      });
+      container.appendChild(chip);
+    });
+
+    document.getElementById('ai-suggest-result').classList.add('show');
+    showToast('💡 ' + suggestions.length + ' suggestions ready!');
+
+  } catch(e) {
+    showToast('❌ Error getting suggestions. Try again!');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = '💡 Get Smart Suggestions';
+  }
+};
+
 </script>
 </body>
 </html>
