@@ -397,6 +397,31 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
 
+/* ══ TASK DETAIL MODAL ══ */
+#task-modal .modal{max-width:460px;}
+.task-modal-title{font-family:'Fraunces',serif;font-size:20px;font-weight:900;margin-bottom:4px;color:var(--ink);}
+.task-modal-meta{display:flex;gap:8px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+.task-modal-tag{font-size:10px;padding:3px 9px;border-radius:99px;font-weight:700;}
+.notes-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:6px;font-weight:600;display:block;}
+.notes-textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;resize:vertical;min-height:90px;line-height:1.6;}
+.notes-textarea:focus{border-color:var(--ink);}
+.notes-preview{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* recurring toggle in add modal */
+.recur-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0 0;}
+.recur-row label{font-size:12px;font-weight:600;color:var(--ink);}
+.recur-select{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;display:none;}
+.recur-select.show{display:block;}
+/* recurring badge on task card */
+.ct-recur{font-size:9px;padding:1px 6px;border-radius:99px;font-weight:700;background:rgba(162,155,254,.18);color:#6c5ce7;letter-spacing:.2px;}
+/* notes icon on task card */
+.ct-notes-icon{font-size:11px;color:var(--muted);cursor:pointer;flex-shrink:0;opacity:.7;}
+.ct-notes-icon:hover{opacity:1;}
+/* Task detail modal save btn */
+.task-modal-save{width:100%;padding:12px;border-radius:10px;border:none;background:var(--ink);color:#fff;font-family:'Fraunces',serif;font-weight:700;font-size:14px;cursor:pointer;transition:opacity .2s;margin-top:14px;}
+.task-modal-save:hover{opacity:.85;}
+.task-modal-close{position:absolute;top:16px;right:16px;background:transparent;border:none;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;}
+
+
 /* ══ MOBILE DAY LABEL (shown inside each cell on mobile) ══ */
 .mobile-day-label {
   display: none;
@@ -891,9 +916,53 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="modal-badge" id="modal-badge"></div>
     <h3>Add New Task</h3>
     <div class="field"><label>Task Name</label><input id="m-text" placeholder="What needs to be done?" autocomplete="off"></div>
+    <div class="field"><label>Notes (optional)</label><textarea class="notes-textarea" id="m-notes" placeholder="Extra details, links, reminders..." style="min-height:60px;"></textarea></div>
     <div class="field"><label>Category</label><select id="m-cat"><option value="work">💼 Work</option><option value="personal">🏠 Personal</option><option value="shopping">🛒 Shopping</option><option value="health">💪 Health</option></select></div>
     <div class="field"><label>Priority</label><select id="m-pri"><option value="high">🔴 High</option><option value="medium" selected>🟡 Medium</option><option value="low">🟢 Low</option></select></div>
+    <div class="field">
+      <div class="recur-row">
+        <label>🔁 Recurring task?</label>
+        <label class="toggle"><input type="checkbox" id="m-recur-toggle" onchange="toggleRecurSelect()"><span class="toggle-slider"></span></label>
+      </div>
+      <select class="recur-select" id="m-recur-freq" style="margin-top:8px;width:100%;">
+        <option value="weekly">Every week (same day)</option>
+        <option value="monday">Every Monday</option>
+        <option value="tuesday">Every Tuesday</option>
+        <option value="wednesday">Every Wednesday</option>
+        <option value="thursday">Every Thursday</option>
+        <option value="friday">Every Friday</option>
+        <option value="saturday">Every Saturday</option>
+        <option value="sunday">Every Sunday</option>
+      </select>
+    </div>
     <div class="modal-btns"><button class="m-cancel" id="m-cancel">Cancel</button><button class="m-save" id="m-save">Add Task ✦</button></div>
+  </div>
+</div>
+
+<!-- TASK DETAIL MODAL -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal" style="position:relative;">
+    <button class="task-modal-close" onclick="closeTaskModal()">×</button>
+    <div class="modal-badge" id="task-modal-badge"></div>
+    <div class="task-modal-title" id="task-modal-title"></div>
+    <div class="task-modal-meta" id="task-modal-meta"></div>
+    <span class="notes-label">📝 Notes</span>
+    <textarea class="notes-textarea" id="task-modal-notes" placeholder="Add details, links, reminders..."></textarea>
+    <div class="recur-row" style="margin-top:12px;">
+      <label style="font-size:12px;font-weight:600;color:var(--ink);">🔁 Recurring task?</label>
+      <label class="toggle"><input type="checkbox" id="task-modal-recur-toggle" onchange="toggleTaskModalRecurSelect()"><span class="toggle-slider"></span></label>
+    </div>
+    <select class="recur-select" id="task-modal-recur-freq" style="margin-top:8px;width:100%;">
+      <option value="weekly">Every week (same day)</option>
+      <option value="monday">Every Monday</option>
+      <option value="tuesday">Every Tuesday</option>
+      <option value="wednesday">Every Wednesday</option>
+      <option value="thursday">Every Thursday</option>
+      <option value="friday">Every Friday</option>
+      <option value="saturday">Every Saturday</option>
+      <option value="sunday">Every Sunday</option>
+    </select>
+    <button class="task-modal-save" onclick="saveTaskModal()">💾 Save Changes</button>
   </div>
 </div>
 
@@ -998,12 +1067,13 @@ async function loadUserMeta(){
     templates=d.templates||[];
     notifSettings=d.notifSettings||notifSettings;
     notifLog=d.notifLog||[];
+    recurringTasks=d.recurringTasks||[];
     applyNotifSettings();
   }
 }
 
 async function saveUserMeta(){
-  await setDoc(userDocRef(currentUser.uid),{templates,notifSettings,notifLog},{merge:true});
+  await setDoc(userDocRef(currentUser.uid),{templates,notifSettings,notifLog,recurringTasks},{merge:true});
 }
 
 async function loadAllWeeks(){
@@ -1015,8 +1085,9 @@ async function loadAllWeeks(){
 
 function listenWeek(wk){
   if(unsubWeek)unsubWeek();
-  unsubWeek=onSnapshot(weekRef(currentUser.uid,wk),snap=>{
-    weekData=snap.exists()?(snap.data().days||{}):{};
+  unsubWeek=onSnapshot(weekRef(currentUser.uid,wk),async snap=>{
+    weekData=snap.exists()?(snap.data().days||{}):{};;
+    await injectRecurringTasks(weekData);
     render(); checkMotivation();
   });
 }
@@ -1179,9 +1250,14 @@ function render(){
       item.dataset.id=task.id;
       item.innerHTML=`
         <button class="ct-check" data-id="${task.id}" data-day="${i}">${task.done?'✓':''}</button>
-        <div class="ct-body">
+        <div class="ct-body" style="cursor:pointer;" data-open-id="${task.id}" data-open-day="${i}">
           <div class="ct-text">${task.text}</div>
-          <div class="ct-meta"><span class="ct-tag ${task.cat}">${catIcon(task.cat)} ${task.cat}</span>${task.priority==='high'?'<span style="font-size:9px;color:#FF6B6B;font-weight:700;">● HIGH</span>':''}</div>
+          ${task.notes?`<div class="notes-preview">📝 ${task.notes}</div>`:''}
+          <div class="ct-meta">
+            <span class="ct-tag ${task.cat}">${catIcon(task.cat)} ${task.cat}</span>
+            ${task.priority==='high'?'<span style="font-size:9px;color:#FF6B6B;font-weight:700;">● HIGH</span>':''}
+            ${task.recurring?`<span class="ct-recur">🔁 ${task.recurring==='weekly'?'Weekly':task.recurring.charAt(0).toUpperCase()+task.recurring.slice(1)+'s'}</span>`:''}
+          </div>
         </div>
         <button class="ct-del" data-id="${task.id}" data-day="${i}">✕</button>`;
       item.addEventListener('dragstart',e=>{
@@ -1200,29 +1276,27 @@ function render(){
       swipeWrap.appendChild(deleteBg);
       swipeWrap.appendChild(item);
 
-      let touchStartX=0,touchCurrentX=0,touchStartY=0,didSwipe=false;
+      let touchStartX=0,touchCurrentX=0,swiping=false;
       item.addEventListener('touchstart',e=>{
         touchStartX=e.touches[0].clientX;
-        touchStartY=e.touches[0].clientY;
-        touchCurrentX=e.touches[0].clientX;
-        didSwipe=false;
+        swiping=true;
       },{passive:true});
       item.addEventListener('touchmove',e=>{
+        if(!swiping)return;
         touchCurrentX=e.touches[0].clientX;
-        const diffX=touchCurrentX-touchStartX;
-        const diffY=e.touches[0].clientY-touchStartY;
-        // Only swipe if horizontal movement is dominant
-        if(Math.abs(diffX)>Math.abs(diffY)&&diffX<-10){
-          didSwipe=true;
-          const move=Math.max(diffX,-90);
+        const diff=touchCurrentX-touchStartX;
+        if(diff<0){
+          const move=Math.max(diff,-90);
           item.style.transform=`translateX(${move}px)`;
           deleteBg.style.opacity=Math.min(Math.abs(move)/80,1);
         }
       },{passive:true});
       item.addEventListener('touchend',()=>{
+        if(!swiping)return;
+        swiping=false;
         const diff=touchCurrentX-touchStartX;
-        if(didSwipe&&diff<-70){
-          // Confirmed swipe delete
+        if(diff<-70){
+          // Confirmed delete
           haptic([50,30,100]);
           item.style.transform='translateX(-100%)';
           item.style.opacity='0';
@@ -1232,13 +1306,10 @@ function render(){
             showToast('🗑️ Task deleted');
           },280);
         } else {
-          // Just a tap or short swipe — reset position, do nothing
           item.style.transform='';
-          item.style.transition='transform 0.2s ease';
           deleteBg.style.opacity='0';
-          setTimeout(()=>{item.style.transition='';},200);
         }
-        touchStartX=0;touchCurrentX=0;touchStartY=0;didSwipe=false;
+        touchStartX=0;touchCurrentX=0;
       },{passive:true});
 
       cell.appendChild(swipeWrap);
@@ -1252,6 +1323,16 @@ function render(){
   });
 
   // Events
+  // Open task detail modal when clicking task body
+  document.querySelectorAll('[data-open-id]').forEach(body=>{
+    body.addEventListener('click',e=>{
+      e.stopPropagation();
+      const taskId=body.dataset.openId, dayI=parseInt(body.dataset.openDay);
+      const task=(weekData[dayI]||[]).find(t=>t.id===taskId);
+      if(task) openTaskModal(task, dayI);
+    });
+  });
+
   document.querySelectorAll('.ct-check').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const dayI=parseInt(btn.dataset.day),id=btn.dataset.id;
@@ -1325,24 +1406,150 @@ function openModal(dayIdx){
   badge.style.background=color+'18';badge.style.color=color;badge.style.border=`1.5px solid ${color}40`;
   badge.textContent=`${DAYS_FULL[dayIdx]} · ${dates[dayIdx].toLocaleDateString('en-US',{month:'long',day:'numeric'})}`;
   document.getElementById('m-text').value='';
+  document.getElementById('m-notes').value='';
+  document.getElementById('m-recur-toggle').checked=false;
+  document.getElementById('m-recur-freq').classList.remove('show');
   document.getElementById('modal').classList.add('show');
   setTimeout(()=>document.getElementById('m-text').focus(),100);
 }
+
+window.toggleRecurSelect = function(){
+  const chk=document.getElementById('m-recur-toggle');
+  const sel=document.getElementById('m-recur-freq');
+  sel.classList.toggle('show', chk.checked);
+};
+
 async function saveTask(){
   const text=document.getElementById('m-text').value.trim();
   if(!text){document.getElementById('m-text').focus();return;}
+  const notes=document.getElementById('m-notes').value.trim();
+  const recurOn=document.getElementById('m-recur-toggle').checked;
+  const recurFreq=recurOn?document.getElementById('m-recur-freq').value:null;
   const tasks=[...(weekData[openDay]||[])];
-  tasks.push({id:uid(),text,cat:document.getElementById('m-cat').value,priority:document.getElementById('m-pri').value,done:false});
+  const newTask={id:uid(),text,notes,cat:document.getElementById('m-cat').value,priority:document.getElementById('m-pri').value,done:false};
+  if(recurFreq) newTask.recurring=recurFreq;
+  tasks.push(newTask);
   weekData[openDay]=tasks;
   document.getElementById('modal').classList.remove('show');
   render();await saveDay(openDay,tasks);
-  showToast('✅ Task saved to cloud!');
+  // Save recurring task to user meta so it auto-populates future weeks
+  if(recurFreq){ await saveRecurringTask(newTask, openDay); }
+  showToast(recurFreq?'🔁 Recurring task saved!':'✅ Task saved to cloud!');
   allWeekData[weekKey(weekOffset)]=weekData;
 }
+
 document.getElementById('m-save').addEventListener('click',saveTask);
 document.getElementById('m-cancel').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('show');});
 document.getElementById('m-text').addEventListener('keydown',e=>{if(e.key==='Enter')saveTask();});
+
+// ── TASK DETAIL MODAL ──────────────────────
+let openTaskId=null, openTaskDay=null;
+
+function openTaskModal(task, dayI){
+  openTaskId=task.id; openTaskDay=dayI;
+  const color=DAY_COLOR_VALS[dayI];
+  const badge=document.getElementById('task-modal-badge');
+  badge.style.background=color+'18';badge.style.color=color;badge.style.border=`1.5px solid ${color}40`;
+  badge.textContent=DAYS_FULL[dayI];
+  document.getElementById('task-modal-title').textContent=task.text;
+  const catColors={work:'#45aaf2',personal:'#26de81',shopping:'#f0c040',health:'#fd79a8'};
+  const priColors={high:'#FF6B6B',medium:'#FF9F43',low:'#26de81'};
+  document.getElementById('task-modal-meta').innerHTML=`
+    <span class="task-modal-tag" style="background:${catColors[task.cat]}20;color:${catColors[task.cat]}">${catIcon(task.cat)} ${task.cat}</span>
+    <span class="task-modal-tag" style="background:${priColors[task.priority]}20;color:${priColors[task.priority]}">● ${task.priority}</span>
+    ${task.done?'<span class="task-modal-tag" style="background:rgba(38,222,129,.15);color:#20bf6b">✓ done</span>':''}
+  `;
+  document.getElementById('task-modal-notes').value=task.notes||'';
+  const recurChk=document.getElementById('task-modal-recur-toggle');
+  const recurSel=document.getElementById('task-modal-recur-freq');
+  recurChk.checked=!!task.recurring;
+  recurSel.classList.toggle('show',!!task.recurring);
+  if(task.recurring) recurSel.value=task.recurring;
+  document.getElementById('task-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('task-modal-notes').focus(),100);
+}
+
+window.toggleTaskModalRecurSelect = function(){
+  const chk=document.getElementById('task-modal-recur-toggle');
+  document.getElementById('task-modal-recur-freq').classList.toggle('show',chk.checked);
+};
+
+window.closeTaskModal = function(){
+  document.getElementById('task-modal').classList.remove('show');
+  openTaskId=null; openTaskDay=null;
+};
+
+window.saveTaskModal = async function(){
+  if(!openTaskId) return;
+  const tasks=[...(weekData[openTaskDay]||[])];
+  const idx=tasks.findIndex(t=>t.id===openTaskId);
+  if(idx<0){closeTaskModal();return;}
+  const notes=document.getElementById('task-modal-notes').value.trim();
+  const recurOn=document.getElementById('task-modal-recur-toggle').checked;
+  const recurFreq=recurOn?document.getElementById('task-modal-recur-freq').value:null;
+  tasks[idx]={...tasks[idx],notes};
+  if(recurFreq) tasks[idx].recurring=recurFreq;
+  else delete tasks[idx].recurring;
+  weekData[openTaskDay]=tasks;
+  await saveDay(openTaskDay,tasks);
+  if(recurFreq) await saveRecurringTask(tasks[idx], openTaskDay);
+  else await removeRecurringTask(openTaskId);
+  render();
+  closeTaskModal();
+  showToast('💾 Task updated!');
+};
+
+document.getElementById('task-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('task-modal')) closeTaskModal();
+});
+
+// ── RECURRING TASKS LOGIC ──────────────────
+// Store recurring tasks in userMeta and inject them into future weeks
+let recurringTasks = [];
+
+async function saveRecurringTask(task, dayIdx){
+  // Remove old version if exists
+  recurringTasks = recurringTasks.filter(r=>r.id!==task.id);
+  recurringTasks.push({...task, sourceDayIdx: dayIdx});
+  await saveUserMeta();
+}
+
+async function removeRecurringTask(taskId){
+  const before=recurringTasks.length;
+  recurringTasks = recurringTasks.filter(r=>r.id!==taskId);
+  if(recurringTasks.length !== before) await saveUserMeta();
+}
+
+// Called when loading a week — inject any recurring tasks that should appear
+async function injectRecurringTasks(weekDays){
+  if(!recurringTasks.length) return;
+  const dates = getWeekDates(weekOffset);
+  const dayNames = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+  let changed = false;
+
+  for(const rec of recurringTasks){
+    for(let i=0;i<7;i++){
+      const shouldAppear = rec.recurring==='weekly'
+        ? i===rec.sourceDayIdx
+        : dayNames[i]===rec.recurring;
+      if(!shouldAppear) continue;
+      const dayTasks = weekDays[i]||[];
+      // Check if already present (by source task id or text match)
+      const alreadyHere = dayTasks.some(t=>t.id===rec.id||t.sourceRecurId===rec.id);
+      if(!alreadyHere){
+        const newTask={...rec,id:uid(),sourceRecurId:rec.id,done:false};
+        weekDays[i]=[...dayTasks,newTask];
+        changed=true;
+      }
+    }
+  }
+  if(changed){
+    for(let i=0;i<7;i++){
+      if(weekDays[i]) await saveDay(i,weekDays[i]);
+    }
+  }
+}
 
 // ══ WEEK NAV ════════════════════════════════
 document.getElementById('prev-week').addEventListener('click',()=>{weekOffset--;weekData={};listenWeek(weekKey(weekOffset));});
