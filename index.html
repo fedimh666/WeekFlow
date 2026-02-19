@@ -181,6 +181,18 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .ct-tag{font-size:9px;padding:1px 5px;border-radius:99px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
 .ct-tag.work{background:rgba(69,170,242,.15);color:#2d98da;} .ct-tag.personal{background:rgba(38,222,129,.12);color:#20bf6b;}
 .ct-tag.shopping{background:rgba(254,202,87,.2);color:#e0a800;} .ct-tag.health{background:rgba(253,121,168,.15);color:#e84393;}
+.ct-tag.custom{background:rgba(162,155,254,.15);color:#6c5ce7;}
+/* custom category input row */
+.custom-cat-row{display:flex;gap:8px;align-items:center;margin-top:8px;display:none;}
+.custom-cat-row.show{display:flex;}
+.custom-cat-input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;}
+.custom-cat-input:focus{border-color:#a29bfe;}
+.custom-cat-emoji{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:16px;cursor:pointer;outline:none;width:50px;text-align:center;}
+/* emoji picker */
+.emoji-picker{display:none;flex-wrap:wrap;gap:4px;padding:10px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);position:absolute;z-index:500;width:220px;}
+.emoji-picker.show{display:flex;}
+.emoji-opt{font-size:20px;cursor:pointer;padding:4px;border-radius:6px;transition:background .15s;}
+.emoji-opt:hover{background:var(--bg);}
 .ct-del{width:18px;height:18px;border-radius:5px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .15s;flex-shrink:0;}
 .cell-task:hover .ct-del{opacity:1;} .ct-del:hover{background:rgba(255,107,107,.12);color:#FF6B6B;}
 .add-task-btn{width:100%;border:1.5px dashed var(--border);border-radius:9px;background:transparent;padding:7px;color:var(--muted);font-size:11px;cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px;margin-top:4px;}
@@ -917,7 +929,42 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <h3>Add New Task</h3>
     <div class="field"><label>Task Name</label><input id="m-text" placeholder="What needs to be done?" autocomplete="off"></div>
     <div class="field"><label>Notes (optional)</label><textarea class="notes-textarea" id="m-notes" placeholder="Extra details, links, reminders..." style="min-height:60px;"></textarea></div>
-    <div class="field"><label>Category</label><select id="m-cat"><option value="work">💼 Work</option><option value="personal">🏠 Personal</option><option value="shopping">🛒 Shopping</option><option value="health">💪 Health</option></select></div>
+    <div class="field" style="position:relative;">
+      <label>Category</label>
+      <select id="m-cat" onchange="toggleCustomCat('m-custom-cat-row','m-cat')">
+        <option value="work">💼 Work</option>
+        <option value="personal">🏠 Personal</option>
+        <option value="shopping">🛒 Shopping</option>
+        <option value="health">💪 Health</option>
+        <option value="custom">✏️ Custom...</option>
+      </select>
+      <div class="custom-cat-row" id="m-custom-cat-row">
+        <input class="custom-cat-input" id="m-custom-cat-text" placeholder="e.g. Finance, Family, Gym..." maxlength="20">
+        <button class="custom-cat-emoji" id="m-custom-cat-emoji" onclick="toggleEmojiPicker('m-emoji-picker')" type="button">🏷️</button>
+        <div class="emoji-picker" id="m-emoji-picker">
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','📚')">📚</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🎵')">🎵</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🎨')">🎨</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','💰')">💰</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🏋️')">🏋️</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','✈️')">✈️</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🍕')">🍕</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🌿')">🌿</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🎮')">🎮</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🐶')">🐶</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','👨‍👩‍👧')">👨‍👩‍👧</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🔧')">🔧</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','📷')">📷</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🧘')">🧘</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🎯')">🎯</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','💡')">💡</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🌍')">🌍</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🎁')">🎁</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','⚽')">⚽</span>
+          <span class="emoji-opt" onclick="pickEmoji('m-custom-cat-emoji','m-emoji-picker','🎓')">🎓</span>
+        </div>
+      </div>
+    </div>
     <div class="field"><label>Priority</label><select id="m-pri"><option value="high">🔴 High</option><option value="medium" selected>🟡 Medium</option><option value="low">🟢 Low</option></select></div>
     <div class="field">
       <div class="recur-row">
@@ -925,6 +972,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <label class="toggle"><input type="checkbox" id="m-recur-toggle" onchange="toggleRecurSelect()"><span class="toggle-slider"></span></label>
       </div>
       <select class="recur-select" id="m-recur-freq" style="margin-top:8px;width:100%;">
+        <option value="daily">Every day</option>
         <option value="weekly">Every week (same day)</option>
         <option value="monday">Every Monday</option>
         <option value="tuesday">Every Tuesday</option>
@@ -953,6 +1001,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <label class="toggle"><input type="checkbox" id="task-modal-recur-toggle" onchange="toggleTaskModalRecurSelect()"><span class="toggle-slider"></span></label>
     </div>
     <select class="recur-select" id="task-modal-recur-freq" style="margin-top:8px;width:100%;">
+      <option value="daily">Every day</option>
       <option value="weekly">Every week (same day)</option>
       <option value="monday">Every Monday</option>
       <option value="tuesday">Every Tuesday</option>
@@ -1011,7 +1060,7 @@ const DAYS      = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAYS_FULL = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const DAY_COLORS= ['mon','tue','wed','thu','fri','sat','sun'];
 const DAY_COLOR_VALS=['#FF6B6B','#FF9F43','#f0c040','#26de81','#45aaf2','#a29bfe','#fd79a8'];
-const CAT_COLORS= {work:'#45aaf2',personal:'#26de81',shopping:'#f0c040',health:'#fd79a8'};
+const CAT_COLORS= {work:'#45aaf2',personal:'#26de81',shopping:'#f0c040',health:'#fd79a8',custom:'#a29bfe'};
 const QUOTES = [
   {text:"The secret of getting ahead is getting started.",author:"Mark Twain"},
   {text:"Focus on being productive instead of busy.",author:"Tim Ferriss"},
@@ -1046,7 +1095,8 @@ function getMon(off=0){const n=new Date(),d=n.getDay(),diff=d===0?-6:1-d,m=new D
 function getWeekDates(off=0){const m=getMon(off);return Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d;});}
 function weekKey(off=0){return getMon(off).toISOString().slice(0,10);}
 function isToday(date){const n=new Date();return date.getDate()===n.getDate()&&date.getMonth()===n.getMonth()&&date.getFullYear()===n.getFullYear();}
-function catIcon(cat){return{work:'💼',personal:'🏠',shopping:'🛒',health:'💪'}[cat]||'';}
+function catIcon(cat,task){if(cat==='custom')return(task&&task.catEmoji)||'🏷️';return{work:'💼',personal:'🏠',shopping:'🛒',health:'💪'}[cat]||'🏷️';}
+function catName(cat,task){if(cat==='custom')return(task&&task.catLabel)||'Custom';return cat;}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function showSaving(on,err=false){const d=document.getElementById('saving-dot');d.style.display=on?'inline-block':'none';d.className='saving-dot'+(err?' error':'');}
 
@@ -1254,9 +1304,9 @@ function render(){
           <div class="ct-text">${task.text}</div>
           ${task.notes?`<div class="notes-preview">📝 ${task.notes}</div>`:''}
           <div class="ct-meta">
-            <span class="ct-tag ${task.cat}">${catIcon(task.cat)} ${task.cat}</span>
+            <span class="ct-tag ${task.cat}" ${task.cat==='custom'?`style="background:rgba(162,155,254,.15);color:#6c5ce7;"`:""}>${catIcon(task.cat,task)} ${catName(task.cat,task)}</span>
             ${task.priority==='high'?'<span style="font-size:9px;color:#FF6B6B;font-weight:700;">● HIGH</span>':''}
-            ${task.recurring?`<span class="ct-recur">🔁 ${task.recurring==='weekly'?'Weekly':task.recurring.charAt(0).toUpperCase()+task.recurring.slice(1)+'s'}</span>`:''}
+            ${task.recurring?`<span class="ct-recur">🔁 ${task.recurring==='daily'?'Daily':task.recurring==='weekly'?'Weekly':task.recurring.charAt(0).toUpperCase()+task.recurring.slice(1)+'s'}</span>`:''}
           </div>
         </div>
         <button class="ct-del" data-id="${task.id}" data-day="${i}">✕</button>`;
@@ -1409,6 +1459,10 @@ function openModal(dayIdx){
   document.getElementById('m-notes').value='';
   document.getElementById('m-recur-toggle').checked=false;
   document.getElementById('m-recur-freq').classList.remove('show');
+  document.getElementById('m-cat').value='work';
+  document.getElementById('m-custom-cat-row').classList.remove('show');
+  document.getElementById('m-custom-cat-text').value='';
+  document.getElementById('m-custom-cat-emoji').textContent='🏷️';
   document.getElementById('modal').classList.add('show');
   setTimeout(()=>document.getElementById('m-text').focus(),100);
 }
@@ -1426,7 +1480,15 @@ async function saveTask(){
   const recurOn=document.getElementById('m-recur-toggle').checked;
   const recurFreq=recurOn?document.getElementById('m-recur-freq').value:null;
   const tasks=[...(weekData[openDay]||[])];
-  const newTask={id:uid(),text,notes,cat:document.getElementById('m-cat').value,priority:document.getElementById('m-pri').value,done:false};
+  // Handle custom category
+  let catVal=document.getElementById('m-cat').value;
+  let catLabel=null, catEmoji=null;
+  if(catVal==='custom'){
+    catLabel=document.getElementById('m-custom-cat-text').value.trim()||'Custom';
+    catEmoji=document.getElementById('m-custom-cat-emoji').textContent||'🏷️';
+    catVal='custom';
+  }
+  const newTask={id:uid(),text,notes,cat:catVal,catLabel,catEmoji,priority:document.getElementById('m-pri').value,done:false};
   if(recurFreq) newTask.recurring=recurFreq;
   tasks.push(newTask);
   weekData[openDay]=tasks;
@@ -1443,6 +1505,29 @@ document.getElementById('m-cancel').addEventListener('click',()=>document.getEle
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('show');});
 document.getElementById('m-text').addEventListener('keydown',e=>{if(e.key==='Enter')saveTask();});
 
+// ── CUSTOM CATEGORY HELPERS ───────────────
+window.toggleCustomCat = function(rowId, selectId){
+  const val = document.getElementById(selectId).value;
+  document.getElementById(rowId).classList.toggle('show', val==='custom');
+  if(val==='custom') setTimeout(()=>document.getElementById('m-custom-cat-text').focus(),50);
+};
+
+window.toggleEmojiPicker = function(pickerId){
+  document.getElementById(pickerId).classList.toggle('show');
+};
+
+window.pickEmoji = function(btnId, pickerId, emoji){
+  document.getElementById(btnId).textContent=emoji;
+  document.getElementById(pickerId).classList.remove('show');
+};
+
+// Close emoji picker when clicking outside
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.custom-cat-emoji')&&!e.target.closest('.emoji-picker')){
+    document.querySelectorAll('.emoji-picker').forEach(p=>p.classList.remove('show'));
+  }
+});
+
 // ── TASK DETAIL MODAL ──────────────────────
 let openTaskId=null, openTaskDay=null;
 
@@ -1453,10 +1538,10 @@ function openTaskModal(task, dayI){
   badge.style.background=color+'18';badge.style.color=color;badge.style.border=`1.5px solid ${color}40`;
   badge.textContent=DAYS_FULL[dayI];
   document.getElementById('task-modal-title').textContent=task.text;
-  const catColors={work:'#45aaf2',personal:'#26de81',shopping:'#f0c040',health:'#fd79a8'};
+  const catColors={work:'#45aaf2',personal:'#26de81',shopping:'#f0c040',health:'#fd79a8',custom:'#a29bfe'};
   const priColors={high:'#FF6B6B',medium:'#FF9F43',low:'#26de81'};
   document.getElementById('task-modal-meta').innerHTML=`
-    <span class="task-modal-tag" style="background:${catColors[task.cat]}20;color:${catColors[task.cat]}">${catIcon(task.cat)} ${task.cat}</span>
+    <span class="task-modal-tag" style="background:${catColors[task.cat]||'#a29bfe'}20;color:${catColors[task.cat]||'#a29bfe'}">${catIcon(task.cat,task)} ${catName(task.cat,task)}</span>
     <span class="task-modal-tag" style="background:${priColors[task.priority]}20;color:${priColors[task.priority]}">● ${task.priority}</span>
     ${task.done?'<span class="task-modal-tag" style="background:rgba(38,222,129,.15);color:#20bf6b">✓ done</span>':''}
   `;
@@ -1530,9 +1615,11 @@ async function injectRecurringTasks(weekDays){
 
   for(const rec of recurringTasks){
     for(let i=0;i<7;i++){
-      const shouldAppear = rec.recurring==='weekly'
-        ? i===rec.sourceDayIdx
-        : dayNames[i]===rec.recurring;
+      const shouldAppear = rec.recurring==='daily'
+        ? true
+        : rec.recurring==='weekly'
+          ? i===rec.sourceDayIdx
+          : dayNames[i]===rec.recurring;
       if(!shouldAppear) continue;
       const dayTasks = weekDays[i]||[];
       // Check if already present (by source task id or text match)
