@@ -982,6 +982,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <option value="saturday">Every Saturday</option>
         <option value="sunday">Every Sunday</option>
       </select>
+      <div class="recur-select show" id="m-recur-duration-row" style="margin-top:8px;display:none;">
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Duration</label>
+        <select id="m-recur-duration" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;">
+          <option value="forever">Forever (until I delete it)</option>
+          <option value="7">7 days</option>
+          <option value="14">14 days</option>
+          <option value="30">30 days</option>
+          <option value="60">60 days</option>
+          <option value="90">90 days</option>
+        </select>
+      </div>
     </div>
     <div class="modal-btns"><button class="m-cancel" id="m-cancel">Cancel</button><button class="m-save" id="m-save">Add Task ✦</button></div>
   </div>
@@ -1011,6 +1022,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <option value="saturday">Every Saturday</option>
       <option value="sunday">Every Sunday</option>
     </select>
+    <div id="task-modal-duration-row" style="margin-top:8px;display:none;">
+      <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Duration</label>
+      <select id="task-modal-recur-duration" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;">
+        <option value="forever">Forever (until I delete it)</option>
+        <option value="7">7 days</option>
+        <option value="14">14 days</option>
+        <option value="30">30 days</option>
+        <option value="60">60 days</option>
+        <option value="90">90 days</option>
+      </select>
+    </div>
     <button class="task-modal-save" onclick="saveTaskModal()">💾 Save Changes</button>
   </div>
 </div>
@@ -1352,9 +1374,21 @@ function render(){
           haptic([50,30,100]);
           item.style.transform='translateX(-100%)';
           item.style.opacity='0';
-          setTimeout(()=>{
+          setTimeout(async ()=>{
+            // If recurring task instance — add date to skippedDates so it doesn't reappear
+            if(task.sourceRecurId){
+              const dates=getWeekDates(weekOffset);
+              const dayKey=dates[i].toISOString().slice(0,10);
+              const recIdx=recurringTasks.findIndex(r=>r.id===task.sourceRecurId);
+              if(recIdx>=0){
+                const skipped=new Set(recurringTasks[recIdx].skippedDates||[]);
+                skipped.add(dayKey);
+                recurringTasks[recIdx].skippedDates=[...skipped];
+                await saveUserMeta();
+              }
+            }
             const tasks=(weekData[i]||[]).filter(x=>x.id!==task.id);
-            weekData[i]=tasks;saveDay(i,tasks);render();
+            weekData[i]=tasks;await saveDay(i,tasks);render();
             showToast('🗑️ Task deleted');
           },280);
         } else {
@@ -1406,10 +1440,23 @@ function render(){
     });
   });
   document.querySelectorAll('.ct-del').forEach(btn=>{
-    btn.addEventListener('click',()=>{
+    btn.addEventListener('click', async ()=>{
       const dayI=parseInt(btn.dataset.day),id=btn.dataset.id;
+      const task=(weekData[dayI]||[]).find(t=>t.id===id);
+      // If it's a recurring task instance, add this date to skippedDates
+      if(task && task.sourceRecurId){
+        const dates=getWeekDates(weekOffset);
+        const dayKey=dates[dayI].toISOString().slice(0,10);
+        const recIdx=recurringTasks.findIndex(r=>r.id===task.sourceRecurId);
+        if(recIdx>=0){
+          const skipped=new Set(recurringTasks[recIdx].skippedDates||[]);
+          skipped.add(dayKey);
+          recurringTasks[recIdx].skippedDates=[...skipped];
+          await saveUserMeta();
+        }
+      }
       const tasks=(weekData[dayI]||[]).filter(x=>x.id!==id);
-      weekData[dayI]=tasks;saveDay(dayI,tasks);render();showToast('🗑️ Removed');
+      weekData[dayI]=tasks;await saveDay(dayI,tasks);render();showToast('🗑️ Removed');
     });
   });
   // Mobile day label + button
@@ -1475,7 +1522,15 @@ function openModal(dayIdx){
 window.toggleRecurSelect = function(){
   const chk=document.getElementById('m-recur-toggle');
   const sel=document.getElementById('m-recur-freq');
+  const dur=document.getElementById('m-recur-duration-row');
   sel.classList.toggle('show', chk.checked);
+  dur.style.display=chk.checked?'block':'none';
+};
+
+window.toggleTaskModalRecurDuration = function(){
+  const chk=document.getElementById('task-modal-recur-toggle');
+  const dur=document.getElementById('task-modal-duration-row');
+  if(dur) dur.style.display=chk.checked?'block':'none';
 };
 
 async function saveTask(){
@@ -1484,6 +1539,7 @@ async function saveTask(){
   const notes=document.getElementById('m-notes').value.trim();
   const recurOn=document.getElementById('m-recur-toggle').checked;
   const recurFreq=recurOn?document.getElementById('m-recur-freq').value:null;
+  const recurDuration=recurOn?document.getElementById('m-recur-duration').value:'forever';
   const tasks=[...(weekData[openDay]||[])];
   // Handle custom category
   let catVal=document.getElementById('m-cat').value;
@@ -1493,13 +1549,17 @@ async function saveTask(){
     catEmoji=document.getElementById('m-custom-cat-emoji').textContent||'🏷️';
     catVal='custom';
   }
+  const today=new Date(); today.setHours(0,0,0,0);
   const newTask={id:uid(),text,notes,cat:catVal,catLabel,catEmoji,priority:document.getElementById('m-pri').value,done:false};
-  if(recurFreq) newTask.recurring=recurFreq;
+  if(recurFreq){
+    newTask.recurring=recurFreq;
+    newTask.recurStart=today.toISOString().slice(0,10); // start from TODAY
+    newTask.recurDuration=recurDuration; // 'forever' or number of days
+  }
   tasks.push(newTask);
   weekData[openDay]=tasks;
   document.getElementById('modal').classList.remove('show');
   render();await saveDay(openDay,tasks);
-  // Save recurring task to user meta so it auto-populates future weeks
   if(recurFreq){ await saveRecurringTask(newTask, openDay); }
   showToast(recurFreq?'🔁 Recurring task saved!':'✅ Task saved to cloud!');
   allWeekData[weekKey(weekOffset)]=weekData;
@@ -1553,9 +1613,12 @@ function openTaskModal(task, dayI){
   document.getElementById('task-modal-notes').value=task.notes||'';
   const recurChk=document.getElementById('task-modal-recur-toggle');
   const recurSel=document.getElementById('task-modal-recur-freq');
+  const durRow=document.getElementById('task-modal-duration-row');
+  const durSel=document.getElementById('task-modal-recur-duration');
   recurChk.checked=!!task.recurring;
   recurSel.classList.toggle('show',!!task.recurring);
-  if(task.recurring) recurSel.value=task.recurring;
+  if(durRow) durRow.style.display=task.recurring?'block':'none';
+  if(task.recurring){ recurSel.value=task.recurring; if(durSel&&task.recurDuration) durSel.value=task.recurDuration; }
   document.getElementById('task-modal').classList.add('show');
   setTimeout(()=>document.getElementById('task-modal-notes').focus(),100);
 }
@@ -1563,6 +1626,8 @@ function openTaskModal(task, dayI){
 window.toggleTaskModalRecurSelect = function(){
   const chk=document.getElementById('task-modal-recur-toggle');
   document.getElementById('task-modal-recur-freq').classList.toggle('show',chk.checked);
+  const dur=document.getElementById('task-modal-duration-row');
+  if(dur) dur.style.display=chk.checked?'block':'none';
 };
 
 window.closeTaskModal = function(){
@@ -1578,9 +1643,17 @@ window.saveTaskModal = async function(){
   const notes=document.getElementById('task-modal-notes').value.trim();
   const recurOn=document.getElementById('task-modal-recur-toggle').checked;
   const recurFreq=recurOn?document.getElementById('task-modal-recur-freq').value:null;
+  const recurDuration=recurOn?document.getElementById('task-modal-recur-duration').value:'forever';
   tasks[idx]={...tasks[idx],notes};
-  if(recurFreq) tasks[idx].recurring=recurFreq;
-  else delete tasks[idx].recurring;
+  if(recurFreq){
+    tasks[idx].recurring=recurFreq;
+    if(!tasks[idx].recurStart){ const t=new Date();t.setHours(0,0,0,0);tasks[idx].recurStart=t.toISOString().slice(0,10); }
+    tasks[idx].recurDuration=recurDuration;
+  } else {
+    delete tasks[idx].recurring;
+    delete tasks[idx].recurStart;
+    delete tasks[idx].recurDuration;
+  }
   weekData[openTaskDay]=tasks;
   await saveDay(openTaskDay,tasks);
   if(recurFreq) await saveRecurringTask(tasks[idx], openTaskDay);
@@ -1616,19 +1689,46 @@ async function injectRecurringTasks(weekDays){
   if(!recurringTasks.length) return;
   const dates = getWeekDates(weekOffset);
   const dayNames = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+  const today = new Date(); today.setHours(0,0,0,0);
   let changed = false;
 
   for(const rec of recurringTasks){
+    // Parse start date — never inject before this date
+    const startDate = rec.recurStart ? new Date(rec.recurStart+'T00:00:00') : today;
+
+    // Parse end date based on duration
+    let endDate = null;
+    if(rec.recurDuration && rec.recurDuration !== 'forever'){
+      endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + parseInt(rec.recurDuration) - 1);
+    }
+
+    // Set of dates the user manually deleted this recurring task from
+    const skipped = new Set(rec.skippedDates||[]);
+
     for(let i=0;i<7;i++){
+      const dayDate = dates[i]; dayDate.setHours(0,0,0,0);
+      const dayKey = dayDate.toISOString().slice(0,10);
+
+      // Skip past days
+      if(dayDate < today) continue;
+      // Skip before start date
+      if(dayDate < startDate) continue;
+      // Skip after end date
+      if(endDate && dayDate > endDate) continue;
+      // Skip if user manually deleted on this date
+      if(skipped.has(dayKey)) continue;
+
+      // Check if this day matches the recurring pattern
       const shouldAppear = rec.recurring==='daily'
         ? true
         : rec.recurring==='weekly'
           ? i===rec.sourceDayIdx
           : dayNames[i]===rec.recurring;
       if(!shouldAppear) continue;
+
       const dayTasks = weekDays[i]||[];
-      // Check if already present (by source task id or text match)
-      const alreadyHere = dayTasks.some(t=>t.id===rec.id||t.sourceRecurId===rec.id);
+      const alreadyHere = dayTasks.some(t=>t.sourceRecurId===rec.id);
       if(!alreadyHere){
         const newTask={...rec,id:uid(),sourceRecurId:rec.id,done:false};
         weekDays[i]=[...dayTasks,newTask];
