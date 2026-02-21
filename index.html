@@ -231,11 +231,11 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .bar-chart::before{content:'';position:absolute;left:0;right:0;bottom:28px;border-bottom:1.5px dashed var(--border);}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;}
 .bar-col:hover .bar-inner{filter:brightness(1.1);transform:scaleY(1.03);transform-origin:bottom;}
-.bar-outer{flex:1;width:100%;display:flex;align-items:flex-end;padding-bottom:0;}
-.bar-inner{width:100%;border-radius:8px 8px 0 0;min-height:4px;transition:all .6s cubic-bezier(.34,1.2,.64,1);position:relative;overflow:hidden;}
-.bar-done-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0;opacity:.35;transition:height .6s cubic-bezier(.34,1.2,.64,1);}
+.bar-outer{flex:1;width:100%;display:flex;align-items:flex-end;}
+.bar-inner{width:100%;border-radius:8px 8px 0 0;min-height:4px;transition:height .7s cubic-bezier(.34,1.2,.64,1);position:relative;overflow:hidden;}
+.bar-done-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0;transition:height .7s cubic-bezier(.34,1.2,.64,1);}
 .bar-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:6px 0 0;height:28px;display:flex;align-items:flex-start;justify-content:center;}
-.bar-val{font-size:10px;font-weight:800;color:var(--ink);font-family:'Fraunces',serif;margin-bottom:4px;opacity:0;transition:opacity .3s;}
+.bar-val{font-size:10px;font-weight:800;color:var(--ink);font-family:'Fraunces',serif;margin-bottom:4px;opacity:1;transition:opacity .3s;}
 .bar-col:hover .bar-val{opacity:1;}
 /* grid lines */
 .chart-grid{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;top:0;bottom:28px;}
@@ -2407,9 +2407,10 @@ function renderDashboard(){
   document.getElementById('best-day-name').textContent=dayTotals[bestDayIdx]>0?DAYS_FULL[bestDayIdx]:'—';
   document.getElementById('best-day-stat').textContent=dayTotals[bestDayIdx]>0?`${bestDayRate}% avg completion · ${dayDones[bestDayIdx]} tasks done`:'No data yet';
 
-  // ── Bar chart (staircase) ──
+  // ── Bar chart (staircase with pixel heights) ──
   const chart=document.getElementById('bar-chart');if(!chart)return;chart.innerHTML='';
   const maxTasks=Math.max(...dayTotals,1);
+  const BAR_AREA_H=150; // px available for bars (chart 200px - label 28px - padding)
 
   // Grid lines
   const grid=document.createElement('div');grid.className='chart-grid';
@@ -2419,27 +2420,28 @@ function renderDashboard(){
   });
   chart.appendChild(grid);
 
-  // Animate bars in with staggered delay
+  // Bars
   dayTotals.forEach((total,i)=>{
     const done=dayDones[i];
-    const pct=Math.round(total/maxTasks*100);
-    const donePct=total?Math.round(done/total*100):0;
+    const barH=Math.round((total/maxTasks)*BAR_AREA_H);
+    const doneH=total?Math.round((done/total)*barH):0;
     const col=document.createElement('div');col.className='bar-col';
     col.title=`${DAYS_FULL[i]}: ${done} done / ${total} total`;
     col.innerHTML=`
       <div class="bar-val">${done}/${total}</div>
       <div class="bar-outer">
-        <div class="bar-inner" style="height:0%;background:${DAY_COLOR_VALS[i]};">
-          <div class="bar-done-fill" style="height:${donePct}%;background:#fff;"></div>
+        <div class="bar-inner" style="height:4px;background:${DAY_COLOR_VALS[i]};">
+          <div class="bar-done-fill" style="height:${doneH}px;background:rgba(255,255,255,0.45);"></div>
         </div>
       </div>
       <div class="bar-label">${DAYS[i]}</div>`;
     chart.appendChild(col);
-    // Animate in with stagger using rAF for reliability
-    const targetHeight = Math.max(pct, 3) + '%';
-    const barEl = col.querySelector('.bar-inner');
+    // Animate with rAF + stagger
+    const barEl=col.querySelector('.bar-inner');
     requestAnimationFrame(()=>{
-      setTimeout(()=>{ barEl.style.height = targetHeight; }, 60 + i*70);
+      setTimeout(()=>{
+        barEl.style.height=Math.max(barH,4)+'px';
+      }, 60+i*70);
     });
   });
 
