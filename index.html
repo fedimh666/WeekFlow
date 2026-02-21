@@ -2410,28 +2410,32 @@ function renderDashboard(){
   // ── Bar chart (staircase with pixel heights) ──
   const chart=document.getElementById('bar-chart');if(!chart)return;chart.innerHTML='';
   const maxTasks=Math.max(...dayTotals,1);
+  const maxDoneForGrid=Math.max(...dayDones,1);
   const BAR_AREA_H=150; // px available for bars (chart 200px - label 28px - padding)
 
-  // Grid lines
+  // Grid lines based on max done tasks
   const grid=document.createElement('div');grid.className='chart-grid';
-  [maxTasks, Math.round(maxTasks/2), 0].forEach(v=>{
+  [maxDoneForGrid, Math.round(maxDoneForGrid/2), 0].forEach(v=>{
     const line=document.createElement('div');line.className='chart-grid-line';
     line.innerHTML=`<span>${v}</span>`;grid.appendChild(line);
   });
   chart.appendChild(grid);
 
-  // Bars
+  // Bars — height based on DONE tasks, total shown as faint outline
+  const maxDone=Math.max(...dayDones,1);
   dayTotals.forEach((total,i)=>{
     const done=dayDones[i];
-    const barH=Math.round((total/maxTasks)*BAR_AREA_H);
-    const doneH=total?Math.round((done/total)*barH):0;
+    // Bar height = done tasks (what actually grew)
+    const doneH=Math.round((done/maxDone)*BAR_AREA_H);
+    // Total tasks shown as a faint ghost bar behind
+    const totalH=Math.round((total/Math.max(...dayTotals,1))*BAR_AREA_H);
     const col=document.createElement('div');col.className='bar-col';
     col.title=`${DAYS_FULL[i]}: ${done} done / ${total} total`;
     col.innerHTML=`
       <div class="bar-val">${done}/${total}</div>
-      <div class="bar-outer">
-        <div class="bar-inner" style="height:4px;background:${DAY_COLOR_VALS[i]};">
-          <div class="bar-done-fill" style="height:${doneH}px;background:rgba(255,255,255,0.45);"></div>
+      <div class="bar-outer" style="position:relative;">
+        <div class="bar-ghost" style="height:${Math.max(totalH,4)}px;background:${DAY_COLOR_VALS[i]};opacity:0.18;border-radius:8px 8px 0 0;position:absolute;bottom:0;left:0;right:0;"></div>
+        <div class="bar-inner" style="height:4px;background:${DAY_COLOR_VALS[i]};position:relative;z-index:1;">
         </div>
       </div>
       <div class="bar-label">${DAYS[i]}</div>`;
@@ -2440,7 +2444,7 @@ function renderDashboard(){
     const barEl=col.querySelector('.bar-inner');
     requestAnimationFrame(()=>{
       setTimeout(()=>{
-        barEl.style.height=Math.max(barH,4)+'px';
+        barEl.style.height=Math.max(doneH,4)+'px';
       }, 60+i*70);
     });
   });
