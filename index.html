@@ -227,7 +227,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 /* Bar chart */
 /* ── BAR CHART (staircase style) ── */
-.bar-chart{display:flex;align-items:flex-end;gap:6px;height:180px;padding:0 4px;position:relative;}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:200px;padding:0 36px 0 8px;position:relative;overflow:visible;}
 .bar-chart::before{content:'';position:absolute;left:0;right:0;bottom:28px;border-bottom:1.5px dashed var(--border);}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;}
 .bar-col:hover .bar-inner{filter:brightness(1.1);transform:scaleY(1.03);transform-origin:bottom;}
@@ -240,7 +240,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* grid lines */
 .chart-grid{position:absolute;left:0;right:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;top:0;bottom:28px;}
 .chart-grid-line{border-top:1px dashed var(--border);position:relative;}
-.chart-grid-line span{position:absolute;left:-2px;top:-8px;font-size:9px;color:var(--muted);font-weight:600;transform:translateX(-100%);}
+.chart-grid-line span{position:absolute;left:-4px;top:-7px;font-size:9px;color:var(--muted);font-weight:600;transform:translateX(-100%);white-space:nowrap;}
 
 /* ── DONUT (bigger, cleaner) ── */
 .donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
@@ -423,7 +423,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .dash-card-value{font-size:28px;}
   .dash-row{grid-template-columns:1fr;gap:12px;}
   .notif-layout,.templates-layout{grid-template-columns:1fr;gap:14px;}
-  .bar-chart{height:100px;}
+  .bar-chart{height:160px !important;}
   .auth-box{padding:32px 24px;}
   .motiv-banner{flex-wrap:wrap;}
   .template-bar{display:none;}
@@ -1952,7 +1952,7 @@ let pomoState = {
 const POMO_COLORS = { focus: '#FF6B6B', short: '#26de81', long: '#45aaf2' };
 const POMO_LABELS = { focus: 'Focus Session', short: 'Short Break', long: 'Long Break' };
 
-function setPomoMode(mode){
+window.setPomoMode = function setPomoMode(mode){
   if(pomoState.running) return; // don't switch while running
   pomoState.mode = mode;
   const mins = mode==='focus' ? pomoState.settings.focus : mode==='short' ? pomoState.settings.short : pomoState.settings.long;
@@ -1968,7 +1968,7 @@ function setPomoMode(mode){
   updatePomoDisplay();
 }
 
-function togglePomo(){
+window.togglePomo = function togglePomo(){
   if(pomoState.running){
     pausePomo();
   } else {
@@ -1998,7 +1998,7 @@ function pausePomo(){
   showRunningDots(false);
 }
 
-function resetPomo(){
+window.resetPomo = function resetPomo(){
   pausePomo();
   const mins = pomoState.mode==='focus' ? pomoState.settings.focus : pomoState.mode==='short' ? pomoState.settings.short : pomoState.settings.long;
   pomoState.timeLeft = mins * 60;
@@ -2006,7 +2006,7 @@ function resetPomo(){
   updatePomoDisplay();
 }
 
-function skipPomo(){
+window.skipPomo = function skipPomo(){
   pausePomo();
   onPomoComplete();
 }
@@ -2083,7 +2083,7 @@ function renderPomoTaskPicker(){
   updatePomoStats();
 }
 
-function selectPomoTask(){
+window.selectPomoTask = function selectPomoTask(){
   const sel = document.getElementById('pomo-task-select');
   const txt = sel.options[sel.selectedIndex]?.text || '';
   pomoState.selectedTaskId = sel.value;
@@ -2133,7 +2133,7 @@ function renderPomoHistory(){
     </div>`).join('');
 }
 
-function applyPomoSettings(){
+window.applyPomoSettings = function applyPomoSettings(){
   pomoState.settings.focus   = parseInt(document.getElementById('pomo-set-focus').value)||25;
   pomoState.settings.short   = parseInt(document.getElementById('pomo-set-short').value)||5;
   pomoState.settings.long    = parseInt(document.getElementById('pomo-set-long').value)||15;
@@ -2435,10 +2435,12 @@ function renderDashboard(){
       </div>
       <div class="bar-label">${DAYS[i]}</div>`;
     chart.appendChild(col);
-    // Animate in with stagger
-    setTimeout(()=>{
-      col.querySelector('.bar-inner').style.height=Math.max(pct,3)+'%';
-    }, 80 + i*60);
+    // Animate in with stagger using rAF for reliability
+    const targetHeight = Math.max(pct, 3) + '%';
+    const barEl = col.querySelector('.bar-inner');
+    requestAnimationFrame(()=>{
+      setTimeout(()=>{ barEl.style.height = targetHeight; }, 60 + i*70);
+    });
   });
 
   // Donut chart (this week by category)
