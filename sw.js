@@ -1,6 +1,6 @@
 // WeekFlow Pro — Service Worker v6
 // ⚡ FULL OFFLINE SUPPORT — app works completely without internet
-const CACHE_NAME = 'weekflow-v6';
+const CACHE_NAME = 'weekflow-v8';
 const FONT_CACHE = 'weekflow-fonts-v1';
 
 // Core app files to cache immediately on install
