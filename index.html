@@ -18,6 +18,7 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Seg
 </style>
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
   <meta name="theme-color" content="#1A1208">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -32,6 +33,54 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Seg
   --shadow:0 2px 20px rgba(26,18,8,0.08);
   --shadow-lg:0 8px 40px rgba(26,18,8,0.14);
 }
+[data-theme="dark"] {
+  --bg:#0F0F0F; --white:#1C1C1E; --ink:#F0EDE8; --muted:#6B6560; --border:#2C2C2E;
+  --shadow:0 2px 20px rgba(0,0,0,0.4);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.6);
+}
+[data-theme="dark"] body::before{opacity:.15;}
+[data-theme="dark"] .topbar{background:rgba(15,15,15,.95);}
+[data-theme="dark"] .auth-box{background:#1C1C1E;}
+[data-theme="dark"] .cell-task{background:#252525;border-color:#2C2C2E;}
+[data-theme="dark"] .table-wrap{background:#1C1C1E;}
+[data-theme="dark"] .add-task-btn:hover{background:#252525;}
+[data-theme="dark"] .mobile-nav{background:rgba(15,15,15,.97);}
+[data-theme="dark"] #loading{background:#0F0F0F;}
+[data-theme="dark"] .modal .modal{background:#1C1C1E;}
+[data-theme="dark"] .modal-overlay .modal{background:#1C1C1E;}
+[data-theme="dark"] .ios-modal-box{background:#1C1C1E;}
+[data-theme="dark"] .week-row{background:#252525;}
+[data-theme="dark"] .tmpl-item{background:#252525;}
+[data-theme="dark"] .pomo-settings{background:#1C1C1E;}
+[data-theme="dark"] .quote-card{background:#1a1a1a;}
+[data-theme="dark"] .sum-card,.dash-card,.dash-wide,.notif-card,.tmpl-card,.pomo-stat{background:#1C1C1E;}
+[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{background:#252525!important;color:var(--ink)!important;border-color:var(--border)!important;}
+[data-theme="dark"] .auth-field input{background:#252525;}
+[data-theme="dark"] .best-day-card{background:linear-gradient(135deg,#1C1C1E,#252525);}
+[data-theme="dark"] .today-col .day-header{background:#2a2a2a;}
+
+/* Dark mode toggle button */
+.dark-toggle{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--ink);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.dark-toggle:hover{background:var(--ink);color:var(--bg);}
+
+/* Search bar */
+.search-wrap{position:relative;flex-shrink:0;display:flex;align-items:center;gap:6px;}
+.search-input{width:0;padding:0;border:1.5px solid transparent;border-radius:99px;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:all .3s ease;overflow:hidden;}
+.search-input.open{width:190px;padding:7px 14px;}
+.search-icon{display:none;}
+.search-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--ink);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.search-btn:hover{background:var(--ink);color:#fff;}
+
+/* Search results dropdown */
+.search-results{position:absolute;top:42px;right:0;width:320px;background:var(--white);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);z-index:300;max-height:360px;overflow-y:auto;display:none;}
+.search-results.show{display:block;}
+.search-result-item{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--bg);}
+.sr-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sr-text{font-size:13px;font-weight:600;color:var(--ink);flex:1;}
+.sr-meta{font-size:10px;color:var(--muted);}
+.search-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
@@ -407,6 +456,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .mobile-week-bar .tb-today-btn{padding:5px 12px;font-size:11px;}
 
 @media(max-width:768px){
+  #search-wrap{display:none!important;}
   .mobile-nav{display:block;}
   .mobile-week-bar{display:flex;}
   .tb-tabs{display:none !important;}
@@ -806,6 +856,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="tb-today-btn" id="today-btn">Today</button>
     </div>
     <div class="tb-right">
+      <!-- Search -->
+      <div class="search-wrap" id="search-wrap">
+        <input class="search-input" id="search-input" placeholder="Search tasks..." autocomplete="off">
+        <span class="search-icon">🔍</span>
+        <button class="search-btn" id="search-btn" title="Search">🔍</button>
+        <div class="search-results" id="search-results"></div>
+      </div>
+      <!-- Dark mode toggle -->
+      <button class="dark-toggle" id="dark-toggle" title="Toggle dark mode" onclick="toggleDarkMode()">🌙</button>
       <button class="tb-install-btn" id="tb-install-btn" title="Install App">📲 Install App</button>
       <button class="tb-notif-btn" title="Notifications" onclick="showPage('notifications')">🔔<span class="notif-badge" id="notif-badge"></span></button>
       <div class="tb-avatar" id="tb-avatar">?</div>
@@ -2490,6 +2549,130 @@ function renderDashboard(){
   if(!weekRates.length)hist.innerHTML='<div style="color:var(--muted);font-size:12px;padding:20px;text-align:center">No history yet. Start adding tasks!</div>';
 }
 
+// ══ DARK MODE ═══════════════════════════════
+function toggleDarkMode(){
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  document.getElementById('dark-toggle').textContent = newTheme==='dark' ? '☀️' : '🌙';
+  localStorage.setItem('wf-theme', newTheme);
+}
+
+function loadTheme(){
+  const saved = localStorage.getItem('wf-theme') || 
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('dark-toggle');
+  if(btn) btn.textContent = saved==='dark' ? '☀️' : '🌙';
+}
+loadTheme();
+
+// ══ SEARCH ════════════════════════════════════
+const searchBtn = document.getElementById('search-btn');
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchBtn.addEventListener('click', ()=>{
+  const isOpen = searchInput.classList.contains('open');
+  if(isOpen){
+    searchInput.classList.remove('open');
+    searchInput.value='';
+    searchResults.classList.remove('show');
+    searchResults.innerHTML='';
+  } else {
+    searchInput.classList.add('open');
+    document.querySelector('.search-icon').classList.add('show');
+    setTimeout(()=>searchInput.focus(), 300);
+  }
+});
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim().toLowerCase();
+  if(q.length < 2){ searchResults.classList.remove('show'); return; }
+  runSearch(q);
+});
+
+searchInput.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ searchBtn.click(); }
+});
+
+// Close search when clicking outside
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#search-wrap')) {
+    searchInput.classList.remove('open');
+    searchResults.classList.remove('show');
+    searchInput.value='';
+  }
+});
+
+function runSearch(q){
+  const results = [];
+  // Search all weeks
+  Object.entries(allWeekData).forEach(([wk, days])=>{
+    const weekDate = new Date(wk+'T00:00:00');
+    for(let i=0;i<7;i++){
+      (days[i]||[]).forEach(task=>{
+        const inText = task.text?.toLowerCase().includes(q);
+        const inNotes = task.notes?.toLowerCase().includes(q);
+        if(inText || inNotes){
+          results.push({task, dayIdx:i, wk, weekDate});
+        }
+      });
+    }
+  });
+  // Also search current week
+  for(let i=0;i<7;i++){
+    (weekData[i]||[]).forEach(task=>{
+      const wk = weekKey(weekOffset);
+      if(!allWeekData[wk]) { // not already in allWeekData
+        const inText = task.text?.toLowerCase().includes(q);
+        const inNotes = task.notes?.toLowerCase().includes(q);
+        if(inText || inNotes) results.push({task, dayIdx:i, wk, weekDate: getMon(weekOffset)});
+      }
+    });
+  }
+
+  // Sort: most recent first
+  results.sort((a,b)=>b.wk.localeCompare(a.wk));
+
+  if(!results.length){
+    searchResults.innerHTML='<div class="search-empty">🔍 No tasks found for "<strong>'+q+'</strong>"</div>';
+    searchResults.classList.add('show');
+    return;
+  }
+
+  searchResults.innerHTML = results.slice(0,12).map(({task, dayIdx, wk, weekDate})=>{
+    const color = DAY_COLOR_VALS[dayIdx];
+    const dayName = DAYS_FULL[dayIdx];
+    const dateStr = weekDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    const doneStyle = task.done ? 'text-decoration:line-through;opacity:.5;' : '';
+    return `<div class="search-result-item" data-wk="${wk}" data-day="${dayIdx}">
+      <div class="sr-dot" style="background:${color}"></div>
+      <div style="flex:1;min-width:0;">
+        <div class="sr-text" style="${doneStyle}">${task.text}</div>
+        <div class="sr-meta">${dayName} · Week of ${dateStr} ${task.done?'· ✅ Done':''}</div>
+      </div>
+    </div>`;
+  }).join('');
+  searchResults.classList.add('show');
+
+  // Click result → jump to that week
+  searchResults.querySelectorAll('.search-result-item').forEach((el,idx)=>{
+    el.addEventListener('click', ()=>{
+      const targetWk = el.dataset.wk;
+      const currentWk = weekKey(0);
+      // Calculate offset
+      const diff = Math.round((new Date(targetWk+'T00:00:00') - new Date(currentWk+'T00:00:00')) / (7*24*3600*1000));
+      weekOffset = diff;
+      weekData={};
+      listenWeek(targetWk);
+      showPage('planner');
+      searchBtn.click(); // close search
+      showToast(`📅 Jumped to week of ${targetWk}`);
+    });
+  });
+}
+
 // ── Auth enter key ────────────────────────
 ['login-email','login-pass'].forEach(id=>{document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')window.emailLogin();});});
 ['signup-name','signup-email','signup-pass'].forEach(id=>{document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')window.emailSignup();});});
@@ -2503,34 +2686,34 @@ document.getElementById('mob-today-btn')?.addEventListener('click',()=>{weekOffs
 // ✅ FEATURE 15 — PWA SERVICE WORKER
 // ══════════════════════════════════════════
 if('serviceWorker' in navigator){
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('sw.js');
-      console.log('SW registered:', reg.scope);
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('SW registered');
 
-      // ⚡ Check for updates every 60 seconds
-      setInterval(() => reg.update(), 60000);
-
-      // ⚡ When a new SW is waiting — reload automatically
+      // When a new SW installs, wait for it to take over then reload ONCE
       reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'activated') {
-            showToast('🔄 App updated! Reloading...');
-            setTimeout(() => window.location.reload(), 1500);
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if(newSW.state === 'activated' && navigator.serviceWorker.controller) {
+            // Only reload if page has been open >10s (not on first load)
+            if(performance.now() > 10000) {
+              showToast('🔄 App updated!');
+              setTimeout(() => window.location.reload(), 1500);
+            }
           }
         });
       });
-    } catch(err) {
-      console.log('SW failed:', err);
-    }
+    }).catch(err => console.log('SW failed:', err));
   });
 
-  // Listen for SW_UPDATED message from service worker
-  navigator.serviceWorker.addEventListener('message', e => {
-    if (e.data?.type === 'SW_UPDATED') {
-      showToast('✅ App updated to latest version!');
-      setTimeout(() => window.location.reload(), 1500);
+  // Guard: track if we already reloaded to prevent loop
+  let swReloaded = sessionStorage.getItem('sw-reloaded');
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(!swReloaded) {
+      sessionStorage.setItem('sw-reloaded', '1');
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem('sw-reloaded');
     }
   });
 }
