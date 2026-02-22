@@ -2550,20 +2550,28 @@ function renderDashboard(){
 }
 
 // ══ DARK MODE ═══════════════════════════════
-function toggleDarkMode(){
+window.toggleDarkMode = function(){
   const isDark = document.documentElement.getAttribute('data-theme')==='dark';
   const newTheme = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', newTheme);
   document.getElementById('dark-toggle').textContent = newTheme==='dark' ? '☀️' : '🌙';
   localStorage.setItem('wf-theme', newTheme);
-}
+};
 
 function loadTheme(){
-  const saved = localStorage.getItem('wf-theme') || 
+  const saved = localStorage.getItem('wf-theme') ||
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', saved);
-  const btn = document.getElementById('dark-toggle');
-  if(btn) btn.textContent = saved==='dark' ? '☀️' : '🌙';
+  // Wait for DOM to be ready before updating button text
+  const setBtn = () => {
+    const btn = document.getElementById('dark-toggle');
+    if(btn) btn.textContent = saved==='dark' ? '☀️' : '🌙';
+  };
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', setBtn);
+  } else {
+    setBtn();
+  }
 }
 loadTheme();
 
