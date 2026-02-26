@@ -490,6 +490,102 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .mobile-nav-btn .mn-label{font-size:9px;}
 }
 
+
+/* ══ BOARDS PAGE (Trello-style) ══════════════════ */
+.boards-layout{display:flex;flex-direction:column;height:calc(100vh - 62px);overflow:hidden;}
+.boards-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;flex-shrink:0;}
+.boards-title-row{display:flex;align-items:center;gap:12px;}
+.boards-back{background:transparent;border:1.5px solid var(--border);border-radius:9px;padding:7px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.boards-back:hover{border-color:var(--ink);color:var(--ink);}
+.boards-page-title{font-family:'Fraunces',serif;font-size:26px;font-weight:900;}
+.boards-page-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.new-board-btn{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-family:'Fraunces',serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;gap:6px;}
+.new-board-btn:hover{opacity:.85;}
+
+/* Board list grid */
+.boards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:0 24px 24px;}
+.board-card{border-radius:16px;padding:22px;cursor:pointer;transition:transform .15s,box-shadow .2s;position:relative;min-height:120px;display:flex;flex-direction:column;justify-content:space-between;}
+.board-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.board-card-name{font-family:'Fraunces',serif;font-size:18px;font-weight:900;color:#fff;margin-bottom:6px;}
+.board-card-meta{font-size:11px;color:rgba(255,255,255,.7);}
+.board-card-members{display:flex;gap:-4px;margin-top:10px;}
+.board-member-av{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;margin-left:-6px;}
+.board-member-av:first-child{margin-left:0;}
+.board-card-more{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;border-radius:6px;width:28px;height:28px;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
+.board-card:hover .board-card-more{opacity:1;}
+.board-add-card{border:2px dashed var(--border);border-radius:16px;padding:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;font-weight:600;transition:all .2s;min-height:120px;}
+.board-add-card:hover{border-color:var(--ink);color:var(--ink);background:var(--bg);}
+
+/* Board view (kanban) */
+.board-view{display:none;flex-direction:column;height:100%;}
+.board-view.active{display:flex;}
+.board-topbar{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.board-view-title{font-family:'Fraunces',serif;font-size:20px;font-weight:900;flex:1;}
+.board-invite-btn{background:transparent;border:1.5px solid var(--border);border-radius:9px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.board-invite-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+.board-members-row{display:flex;align-items:center;gap:4px;}
+.bm-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FF9F43);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;border:2px solid var(--white);margin-left:-6px;cursor:pointer;transition:transform .15s;}
+.bm-av:first-child{margin-left:0;}
+.bm-av:hover{transform:scale(1.1);}
+
+/* Columns */
+.board-columns-wrap{display:flex;gap:14px;padding:16px 24px 24px;overflow-x:auto;flex:1;align-items:flex-start;}
+.board-column{background:var(--bg);border-radius:14px;width:280px;flex-shrink:0;display:flex;flex-direction:column;max-height:calc(100vh - 180px);}
+.col-header{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;gap:8px;}
+.col-title-input{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--ink);background:transparent;border:none;outline:none;flex:1;cursor:text;}
+.col-title-input:focus{background:var(--white);border-radius:6px;padding:2px 6px;}
+.col-count{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--border);color:var(--muted);}
+.col-menu-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;border-radius:5px;transition:background .15s;}
+.col-menu-btn:hover{background:var(--border);}
+.col-cards{display:flex;flex-direction:column;gap:8px;padding:0 10px 10px;overflow-y:auto;flex:1;}
+.col-cards.drag-over{background:rgba(69,170,242,.06);border-radius:10px;outline:2px dashed rgba(69,170,242,.3);}
+
+/* Kanban card */
+.k-card{background:var(--white);border-radius:10px;padding:12px 13px;border:1px solid var(--border);cursor:pointer;transition:transform .15s,box-shadow .15s;animation:taskPop .2s ease both;position:relative;}
+.k-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.k-card.dragging{opacity:.4;transform:scale(.97);}
+.k-card-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:6px;}
+.k-card-notes{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4;}
+.k-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.k-card-pri{font-size:9px;padding:2px 7px;border-radius:99px;font-weight:700;}
+.k-card-pri.high{background:rgba(255,107,107,.15);color:#FF6B6B;}
+.k-card-pri.medium{background:rgba(255,159,67,.15);color:#FF9F43;}
+.k-card-pri.low{background:rgba(38,222,129,.15);color:#26de81;}
+.k-card-assignee{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#45aaf2,#a29bfe);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;margin-left:auto;}
+.k-card-del{position:absolute;top:8px;right:8px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;}
+.k-card:hover .k-card-del{opacity:1;}
+
+/* Add card btn */
+.add-card-btn{width:100%;padding:9px 14px;border:1.5px dashed var(--border);border-radius:9px;background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;text-align:left;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:6px;margin:0 10px 10px;width:calc(100% - 20px);}
+.add-card-btn:hover{border-color:var(--ink);color:var(--ink);background:var(--white);}
+
+/* Add column */
+.add-col-btn{background:rgba(255,255,255,.6);border:2px dashed var(--border);border-radius:14px;width:240px;flex-shrink:0;padding:20px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;align-self:flex-start;}
+.add-col-btn:hover{border-color:var(--ink);color:var(--ink);background:var(--white);}
+
+/* Invite modal */
+.invite-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .2s;margin-bottom:10px;}
+.invite-input:focus{border-color:var(--ink);}
+.members-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.member-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border-radius:10px;}
+.member-av-lg{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FF6B6B,#FF9F43);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.member-info{flex:1;}
+.member-name{font-size:13px;font-weight:600;color:var(--ink);}
+.member-email{font-size:11px;color:var(--muted);}
+.member-role{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(69,170,242,.15);color:#45aaf2;}
+.member-del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:color .15s;}
+.member-del:hover{color:#FF6B6B;}
+
+/* Card detail modal */
+.card-modal-title-input{width:100%;font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--ink);background:transparent;border:none;outline:none;border-bottom:2px solid var(--border);padding-bottom:8px;margin-bottom:16px;transition:border-color .2s;}
+.card-modal-title-input:focus{border-color:var(--ink);}
+
+@media(max-width:768px){
+  .board-columns-wrap{padding:12px 12px 80px;}
+  .board-column{width:260px;}
+  .boards-grid{grid-template-columns:1fr;padding:0 12px 24px;}
+}
+
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
 
 /* ══ POMODORO PAGE ══════════════════════════ */
@@ -848,6 +944,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="tb-tab" onclick="showPage('templates')" id="tab-templates">📋 Templates</button>
       <button class="tb-tab" onclick="showPage('notifications')" id="tab-notifications">🔔 Reminders</button>
       <button class="tb-tab" onclick="showPage('pomodoro')" id="tab-pomodoro" style="position:relative;">🍅 Focus<span class="pomo-running-dot" id="pomo-dot"></span></button>
+      <button class="tb-tab" onclick="showPage('boards')" id="tab-boards">🗂️ Boards</button>
     </div>
     <div class="tb-week-nav">
       <button class="tb-nav-btn" id="prev-week">◀</button>
@@ -1164,8 +1261,101 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <span class="mn-label" style="color:inherit;">Focus</span>
         <span class="pomo-running-dot" id="pomo-dot-mob"></span>
       </button>
+      <button class="mobile-nav-btn" id="mob-tab-boards" onclick="showPage('boards')">
+        <span class="mn-icon">🗂️</span>
+        <span class="mn-label">Boards</span>
+      </button>
     </div>
   </nav>
+
+
+  <!-- ══ BOARDS PAGE ══ -->
+  <div class="page" id="page-boards">
+    <div class="boards-layout">
+
+      <!-- Boards list view -->
+      <div id="boards-list-view">
+        <div class="boards-header">
+          <div>
+            <div class="boards-page-title">🗂️ My Boards</div>
+            <div class="boards-page-sub">Collaborate with your team in real time</div>
+          </div>
+          <button class="new-board-btn" onclick="openNewBoardModal()">+ New Board</button>
+        </div>
+        <div class="boards-grid" id="boards-grid"></div>
+      </div>
+
+      <!-- Single board (kanban) view -->
+      <div class="board-view" id="board-view">
+        <div class="board-topbar">
+          <button class="boards-back" onclick="closeBoard()">← All Boards</button>
+          <div class="board-view-title" id="board-view-title">Board</div>
+          <div class="board-members-row" id="board-members-row"></div>
+          <button class="board-invite-btn" onclick="openInviteModal()">👥 Invite</button>
+        </div>
+        <div class="board-columns-wrap" id="board-columns-wrap"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NEW BOARD MODAL -->
+  <div class="modal-overlay" id="new-board-modal">
+    <div class="modal">
+      <h3>Create New Board</h3>
+      <div class="field"><label>Board Name</label><input id="nb-name" placeholder="e.g. Product Roadmap, Team Sprint..."></div>
+      <div class="field"><label>Color Theme</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="nb-colors">
+          <div class="nb-color active" data-color="linear-gradient(135deg,#FF6B6B,#FF9F43)" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#FF6B6B,#FF9F43);cursor:pointer;border:3px solid transparent;transition:all .2s;"></div>
+          <div class="nb-color" data-color="linear-gradient(135deg,#45aaf2,#26de81)" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#45aaf2,#26de81);cursor:pointer;border:3px solid transparent;transition:all .2s;"></div>
+          <div class="nb-color" data-color="linear-gradient(135deg,#a29bfe,#fd79a8)" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#a29bfe,#fd79a8);cursor:pointer;border:3px solid transparent;transition:all .2s;"></div>
+          <div class="nb-color" data-color="linear-gradient(135deg,#1A1208,#2d2015)" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#1A1208,#2d2015);cursor:pointer;border:3px solid transparent;transition:all .2s;"></div>
+          <div class="nb-color" data-color="linear-gradient(135deg,#26de81,#45aaf2)" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#26de81,#45aaf2);cursor:pointer;border:3px solid transparent;transition:all .2s;"></div>
+          <div class="nb-color" data-color="linear-gradient(135deg,#f0c040,#FF9F43)" style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#f0c040,#FF9F43);cursor:pointer;border:3px solid transparent;transition:all .2s;"></div>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="m-cancel" onclick="document.getElementById('new-board-modal').classList.remove('show')">Cancel</button>
+        <button class="m-save" onclick="createBoard()">Create Board ✦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVITE MODAL -->
+  <div class="modal-overlay" id="invite-modal">
+    <div class="modal">
+      <h3>👥 Invite Members</h3>
+      <input class="invite-input" id="invite-email" placeholder="Enter email address..." type="email">
+      <button class="m-save" style="width:100%;margin-bottom:8px;" onclick="inviteMember()">Send Invite</button>
+      <div class="members-list" id="members-list"></div>
+      <div class="modal-btns" style="margin-top:16px;">
+        <button class="m-cancel" onclick="document.getElementById('invite-modal').classList.remove('show')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD DETAIL MODAL -->
+  <div class="modal-overlay" id="card-modal">
+    <div class="modal" style="max-width:480px;position:relative;">
+      <button class="task-modal-close" onclick="closeCardModal()">×</button>
+      <input class="card-modal-title-input" id="card-modal-title" placeholder="Card title...">
+      <div class="field"><label>Notes</label><textarea class="notes-textarea" id="card-modal-notes" placeholder="Add details, links, context..." style="min-height:80px;"></textarea></div>
+      <div class="field"><label>Priority</label>
+        <select id="card-modal-pri">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
+      </div>
+      <div class="field"><label>Assign to</label>
+        <select id="card-modal-assignee"><option value="">— Unassigned —</option></select>
+      </div>
+      <div class="modal-btns">
+        <button class="m-cancel" style="color:#FF6B6B;border-color:#FF6B6B;" onclick="deleteCard()">🗑 Delete</button>
+        <button class="m-save" onclick="saveCard()">Save Card ✦</button>
+      </div>
+    </div>
+  </div>
 
 </div><!-- /#app -->
 
@@ -1482,6 +1672,7 @@ window.showPage=function(page){
   if(page==='templates'){renderTemplatesPage();}
   if(page==='notifications'){renderNotifLog();}
   if(page==='pomodoro'){renderPomoTaskPicker();}
+  if(page==='boards'){renderBoardsList();}
 };
 
 // ══ RENDER PLANNER ═════════════════════════
@@ -2680,6 +2871,382 @@ function runSearch(q){
     });
   });
 }
+
+
+// ══ BOARDS (Trello-style) ═══════════════════════════════
+
+let boards = [];           // all boards for this user
+let currentBoard = null;   // board being viewed
+let editingCard = null;    // {boardId, colId, cardId}
+let selectedBoardColor = 'linear-gradient(135deg,#FF6B6B,#FF9F43)';
+
+// ── Firestore refs ──
+// Boards live at top-level /boards so ALL members can access them
+function boardsColRef(){ return collection(db,'boards'); }
+function boardDocRef(bid){ return doc(db,'boards',bid); }
+
+// ── Load all boards where user is a member ──
+async function loadBoards(){
+  if(!currentUser) return;
+  const snap = await getDocs(boardsColRef());
+  boards = [];
+  snap.forEach(d => {
+    const data = d.data();
+    const members = data.members || [];
+    // Show board if user is owner OR is in members list by uid or email
+    const isMember = members.some(m =>
+      m.uid === currentUser.uid || m.email === currentUser.email
+    );
+    if(isMember) boards.push({id:d.id, ...data});
+  });
+}
+
+// ── Render boards list ──
+async function renderBoardsList(){
+  await loadBoards();
+  document.getElementById('boards-list-view').style.display = '';
+  document.getElementById('board-view').classList.remove('active');
+  const grid = document.getElementById('boards-grid');
+  grid.innerHTML = '';
+
+  boards.forEach(board => {
+    const members = board.members || [];
+    const colCount = (board.columns||[]).length;
+    const cardCount = (board.columns||[]).reduce((a,c)=>a+(c.cards||[]).length,0);
+    const card = document.createElement('div');
+    card.className = 'board-card';
+    card.style.background = board.color || 'linear-gradient(135deg,#FF6B6B,#FF9F43)';
+    card.innerHTML = `
+      <div>
+        <div class="board-card-name">${board.name}</div>
+        <div class="board-card-meta">${colCount} columns · ${cardCount} cards · ${members.length} member${members.length!==1?'s':''}</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="board-card-members">
+          ${members.slice(0,4).map(m=>`<div class="board-member-av" title="${m.name||m.email}">${(m.name||m.email)[0].toUpperCase()}</div>`).join('')}
+        </div>
+      </div>`;
+    card.addEventListener('click', () => openBoard(board.id));
+    grid.appendChild(card);
+  });
+
+  // Add new board card
+  const addCard = document.createElement('div');
+  addCard.className = 'board-add-card';
+  addCard.innerHTML = '<span style="font-size:22px;">+</span> New Board';
+  addCard.addEventListener('click', openNewBoardModal);
+  grid.appendChild(addCard);
+}
+
+// ── Open board ──
+async function openBoard(boardId){
+  currentBoard = boards.find(b => b.id === boardId);
+  if(!currentBoard) return;
+  // Subscribe to real-time updates
+  if(window._boardUnsub) window._boardUnsub();
+  window._boardUnsub = onSnapshot(boardDocRef(boardId), snap => {
+    if(snap.exists()){
+      currentBoard = {id: snap.id, ...snap.data()};
+      renderBoardView();
+    }
+  });
+  document.getElementById('boards-list-view').style.display = 'none';
+  document.getElementById('board-view').classList.add('active');
+}
+
+function closeBoard(){
+  if(window._boardUnsub){ window._boardUnsub(); window._boardUnsub=null; }
+  currentBoard = null;
+  renderBoardsList();
+}
+
+// ── Render kanban columns ──
+function renderBoardView(){
+  if(!currentBoard) return;
+  document.getElementById('board-view-title').textContent = currentBoard.name;
+  // Members avatars
+  const membersRow = document.getElementById('board-members-row');
+  const members = currentBoard.members || [];
+  membersRow.innerHTML = members.slice(0,6).map(m =>
+    `<div class="bm-av" title="${m.name||m.email}">${(m.name||m.email)[0].toUpperCase()}</div>`
+  ).join('');
+
+  const wrap = document.getElementById('board-columns-wrap');
+  wrap.innerHTML = '';
+  const columns = currentBoard.columns || [];
+
+  columns.forEach(col => {
+    const colEl = document.createElement('div');
+    colEl.className = 'board-column';
+    colEl.dataset.colId = col.id;
+
+    const cards = col.cards || [];
+    colEl.innerHTML = `
+      <div class="col-header">
+        <input class="col-title-input" value="${col.title}" data-col-id="${col.id}" onblur="renameColumn('${col.id}', this.value)">
+        <span class="col-count">${cards.length}</span>
+        <button class="col-menu-btn" onclick="deleteColumn('${col.id}')" title="Delete column">×</button>
+      </div>
+      <div class="col-cards" id="col-cards-${col.id}" data-col-id="${col.id}"></div>
+      <button class="add-card-btn" onclick="openAddCard('${col.id}')">+ Add card</button>`;
+
+    wrap.appendChild(colEl);
+
+    const cardsEl = document.getElementById('col-cards-'+col.id);
+    cards.forEach(card => {
+      const cardEl = createCardEl(card, col.id);
+      cardsEl.appendChild(cardEl);
+    });
+
+    // Drop zone
+    cardsEl.addEventListener('dragover', e => { e.preventDefault(); cardsEl.classList.add('drag-over'); });
+    cardsEl.addEventListener('dragleave', () => cardsEl.classList.remove('drag-over'));
+    cardsEl.addEventListener('drop', e => {
+      e.preventDefault(); cardsEl.classList.remove('drag-over');
+      const srcColId = e.dataTransfer.getData('srcColId');
+      const cardId   = e.dataTransfer.getData('cardId');
+      if(srcColId === col.id) return;
+      moveCard(cardId, srcColId, col.id);
+    });
+  });
+
+  // Add column button
+  const addColBtn = document.createElement('button');
+  addColBtn.className = 'add-col-btn';
+  addColBtn.innerHTML = '+ Add Column';
+  addColBtn.addEventListener('click', addColumn);
+  wrap.appendChild(addColBtn);
+}
+
+function createCardEl(card, colId){
+  const el = document.createElement('div');
+  el.className = 'k-card';
+  el.draggable = true;
+  el.dataset.cardId = card.id;
+  const assigneeName = card.assignee ? (currentBoard.members||[]).find(m=>m.uid===card.assignee||m.email===card.assignee)?.name || card.assignee : '';
+  el.innerHTML = `
+    <button class="k-card-del" onclick="quickDeleteCard(event,'${colId}','${card.id}')">✕</button>
+    <div class="k-card-title">${card.title}</div>
+    ${card.notes ? `<div class="k-card-notes">${card.notes.substring(0,80)}${card.notes.length>80?'...':''}</div>` : ''}
+    <div class="k-card-meta">
+      <span class="k-card-pri ${card.priority||'medium'}">${card.priority==='high'?'● High':card.priority==='low'?'● Low':'● Medium'}</span>
+      ${assigneeName ? `<div class="k-card-assignee" title="${assigneeName}">${assigneeName[0].toUpperCase()}</div>` : ''}
+    </div>`;
+  el.addEventListener('click', () => openCardModal(colId, card.id));
+  el.addEventListener('dragstart', e => {
+    el.classList.add('dragging');
+    e.dataTransfer.setData('cardId', card.id);
+    e.dataTransfer.setData('srcColId', colId);
+  });
+  el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  return el;
+}
+
+// ── Board CRUD ──
+window.openNewBoardModal = function(){
+  document.getElementById('nb-name').value = '';
+  selectedBoardColor = 'linear-gradient(135deg,#FF6B6B,#FF9F43)';
+  document.querySelectorAll('.nb-color').forEach(el => el.style.border = '3px solid transparent');
+  document.querySelector('.nb-color').style.border = '3px solid var(--ink)';
+  document.getElementById('new-board-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('nb-name').focus(), 100);
+};
+
+document.getElementById('nb-colors')?.addEventListener('click', e => {
+  const target = e.target.closest('.nb-color');
+  if(!target) return;
+  document.querySelectorAll('.nb-color').forEach(el => el.style.border = '3px solid transparent');
+  target.style.border = '3px solid var(--ink)';
+  selectedBoardColor = target.dataset.color;
+});
+
+window.createBoard = async function(){
+  const name = document.getElementById('nb-name').value.trim();
+  if(!name){ showToast('⚠️ Enter a board name'); return; }
+  const board = {
+    name, color: selectedBoardColor,
+    createdAt: new Date().toISOString(),
+    owner: currentUser.uid,
+    members: [{uid: currentUser.uid, email: currentUser.email, name: currentUser.displayName||currentUser.email.split('@')[0], role:'owner'}],
+    columns: [
+      {id:uid(), title:'📋 To Do',    cards:[]},
+      {id:uid(), title:'🔄 In Progress', cards:[]},
+      {id:uid(), title:'✅ Done',     cards:[]},
+    ]
+  };
+  const ref = doc(boardsColRef());
+  await setDoc(ref, board);
+  document.getElementById('new-board-modal').classList.remove('show');
+  showToast('🗂️ Board created!');
+  await renderBoardsList();
+};
+
+// ── Column CRUD ──
+async function addColumn(){
+  if(!currentBoard) return;
+  const cols = [...(currentBoard.columns||[])];
+  cols.push({id:uid(), title:'New Column', cards:[]});
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+}
+
+window.renameColumn = async function(colId, newTitle){
+  if(!currentBoard||!newTitle.trim()) return;
+  const cols = (currentBoard.columns||[]).map(c => c.id===colId ? {...c, title:newTitle} : c);
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+};
+
+window.deleteColumn = async function(colId){
+  if(!currentBoard) return;
+  if(!confirm('Delete this column and all its cards?')) return;
+  const cols = (currentBoard.columns||[]).filter(c => c.id!==colId);
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+};
+
+// ── Card CRUD ──
+window.openAddCard = function(colId){
+  editingCard = {colId, cardId: null};
+  document.getElementById('card-modal-title').value = '';
+  document.getElementById('card-modal-notes').value = '';
+  document.getElementById('card-modal-pri').value = 'medium';
+  populateAssigneeSelect();
+  document.getElementById('card-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('card-modal-title').focus(), 100);
+};
+
+function openCardModal(colId, cardId){
+  const col = (currentBoard.columns||[]).find(c=>c.id===colId);
+  const card = (col?.cards||[]).find(c=>c.id===cardId);
+  if(!card) return;
+  editingCard = {colId, cardId};
+  document.getElementById('card-modal-title').value = card.title;
+  document.getElementById('card-modal-notes').value = card.notes||'';
+  document.getElementById('card-modal-pri').value = card.priority||'medium';
+  populateAssigneeSelect(card.assignee);
+  document.getElementById('card-modal').classList.add('show');
+}
+
+window.closeCardModal = function(){
+  document.getElementById('card-modal').classList.remove('show');
+  editingCard = null;
+};
+
+function populateAssigneeSelect(selected=''){
+  const sel = document.getElementById('card-modal-assignee');
+  sel.innerHTML = '<option value="">— Unassigned —</option>';
+  (currentBoard?.members||[]).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.uid||m.email;
+    opt.textContent = m.name||m.email;
+    if(selected === (m.uid||m.email)) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+window.saveCard = async function(){
+  const title = document.getElementById('card-modal-title').value.trim();
+  if(!title){ showToast('⚠️ Enter a card title'); return; }
+  const notes    = document.getElementById('card-modal-notes').value.trim();
+  const priority = document.getElementById('card-modal-pri').value;
+  const assignee = document.getElementById('card-modal-assignee').value;
+  const cols = JSON.parse(JSON.stringify(currentBoard.columns||[]));
+  const colIdx = cols.findIndex(c => c.id===editingCard.colId);
+  if(colIdx<0) return;
+  if(editingCard.cardId){
+    // Update existing
+    const cardIdx = cols[colIdx].cards.findIndex(c=>c.id===editingCard.cardId);
+    if(cardIdx>=0) cols[colIdx].cards[cardIdx] = {...cols[colIdx].cards[cardIdx], title, notes, priority, assignee};
+  } else {
+    // New card
+    cols[colIdx].cards.push({id:uid(), title, notes, priority, assignee, createdAt:new Date().toISOString(), createdBy:currentUser.uid});
+  }
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+  closeCardModal();
+  showToast(editingCard.cardId ? '💾 Card updated!' : '✅ Card added!');
+};
+
+window.deleteCard = async function(){
+  if(!editingCard?.cardId) return;
+  if(!confirm('Delete this card?')) return;
+  const cols = JSON.parse(JSON.stringify(currentBoard.columns||[]));
+  const colIdx = cols.findIndex(c=>c.id===editingCard.colId);
+  if(colIdx>=0) cols[colIdx].cards = cols[colIdx].cards.filter(c=>c.id!==editingCard.cardId);
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+  closeCardModal();
+  showToast('🗑️ Card deleted');
+};
+
+window.quickDeleteCard = async function(e, colId, cardId){
+  e.stopPropagation();
+  const cols = JSON.parse(JSON.stringify(currentBoard.columns||[]));
+  const colIdx = cols.findIndex(c=>c.id===colId);
+  if(colIdx>=0) cols[colIdx].cards = cols[colIdx].cards.filter(c=>c.id!==cardId);
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+  showToast('🗑️ Removed');
+};
+
+async function moveCard(cardId, srcColId, tgtColId){
+  const cols = JSON.parse(JSON.stringify(currentBoard.columns||[]));
+  const srcIdx = cols.findIndex(c=>c.id===srcColId);
+  const tgtIdx = cols.findIndex(c=>c.id===tgtColId);
+  if(srcIdx<0||tgtIdx<0) return;
+  const cardIdx = cols[srcIdx].cards.findIndex(c=>c.id===cardId);
+  if(cardIdx<0) return;
+  const [moved] = cols[srcIdx].cards.splice(cardIdx,1);
+  cols[tgtIdx].cards.push(moved);
+  await setDoc(boardDocRef(currentBoard.id), {columns:cols}, {merge:true});
+  showToast('↔️ Card moved!');
+}
+
+// ── Invite members ──
+window.openInviteModal = function(){
+  document.getElementById('invite-email').value = '';
+  renderMembersList();
+  document.getElementById('invite-modal').classList.add('show');
+};
+
+function renderMembersList(){
+  const list = document.getElementById('members-list');
+  const members = currentBoard?.members||[];
+  list.innerHTML = members.map(m => `
+    <div class="member-row">
+      <div class="member-av-lg">${(m.name||m.email)[0].toUpperCase()}</div>
+      <div class="member-info">
+        <div class="member-name">${m.name||m.email.split('@')[0]}</div>
+        <div class="member-email">${m.email}</div>
+      </div>
+      <span class="member-role">${m.role||'member'}</span>
+      ${m.uid!==currentUser.uid ? `<button class="member-del" onclick="removeMember('${m.email}')">✕</button>` : ''}
+    </div>`).join('');
+}
+
+window.inviteMember = async function(){
+  const email = document.getElementById('invite-email').value.trim().toLowerCase();
+  if(!email || !email.includes('@')){ showToast('⚠️ Enter a valid email'); return; }
+  const members = [...(currentBoard.members||[])];
+  if(members.find(m=>m.email===email)){ showToast('⚠️ Already a member'); return; }
+  members.push({email, name:email.split('@')[0], role:'member', uid:''});
+  await setDoc(boardDocRef(currentBoard.id), {members}, {merge:true});
+  document.getElementById('invite-email').value = '';
+  showToast(`📧 ${email} invited!`);
+  renderMembersList();
+};
+
+window.removeMember = async function(email){
+  if(!confirm(`Remove ${email} from this board?`)) return;
+  const members = (currentBoard.members||[]).filter(m=>m.email!==email);
+  await setDoc(boardDocRef(currentBoard.id), {members}, {merge:true});
+  renderMembersList();
+  showToast('✅ Member removed');
+};
+
+// Close modals on overlay click
+['new-board-modal','invite-modal','card-modal'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('click', e=>{
+    if(e.target===document.getElementById(id)) document.getElementById(id).classList.remove('show');
+  });
+});
+document.getElementById('card-modal-title')?.addEventListener('keydown', e=>{ if(e.key==='Enter') window.saveCard(); });
+
 
 // ── Auth enter key ────────────────────────
 ['login-email','login-pass'].forEach(id=>{document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')window.emailLogin();});});
