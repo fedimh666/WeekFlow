@@ -1494,7 +1494,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged,signOut,signInWithEmailAndPassword,createUserWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc,onSnapshot,collection,getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore,doc,setDoc,getDoc,onSnapshot,collection,getDocs,query,where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ══════════════════════════════════════════
 // 🔥 FIREBASE CONFIG — weekflow-8e05f
@@ -2888,17 +2888,23 @@ function boardDocRef(bid){ return doc(db,'boards',bid); }
 // ── Load all boards where user is a member ──
 async function loadBoards(){
   if(!currentUser) return;
-  const snap = await getDocs(boardsColRef());
   boards = [];
-  snap.forEach(d => {
-    const data = d.data();
-    const members = data.members || [];
-    // Show board if user is owner OR is in members list by uid or email
-    const isMember = members.some(m =>
-      m.uid === currentUser.uid || m.email === currentUser.email
-    );
-    if(isMember) boards.push({id:d.id, ...data});
-  });
+  try {
+    // Query boards where user is owner
+    const q1 = query(boardsColRef(), where('owner','==',currentUser.uid));
+    const snap1 = await getDocs(q1);
+    snap1.forEach(d => boards.push({id:d.id, ...d.data()}));
+
+    // Query boards where user email is in memberEmails array
+    const q2 = query(boardsColRef(), where('memberEmails','array-contains', currentUser.email));
+    const snap2 = await getDocs(q2);
+    snap2.forEach(d => {
+      if(!boards.find(b=>b.id===d.id)) boards.push({id:d.id, ...d.data()});
+    });
+  } catch(e) {
+    console.error('loadBoards error:', e);
+    showToast('⚠️ Could not load boards — check Firestore rules');
+  }
 }
 
 // ── Render boards list ──
@@ -3067,6 +3073,7 @@ window.createBoard = async function(){
     name, color: selectedBoardColor,
     createdAt: new Date().toISOString(),
     owner: currentUser.uid,
+    memberEmails: [currentUser.email],
     members: [{uid: currentUser.uid, email: currentUser.email, name: currentUser.displayName||currentUser.email.split('@')[0], role:'owner'}],
     columns: [
       {id:uid(), title:'📋 To Do',    cards:[]},
@@ -3225,7 +3232,8 @@ window.inviteMember = async function(){
   const members = [...(currentBoard.members||[])];
   if(members.find(m=>m.email===email)){ showToast('⚠️ Already a member'); return; }
   members.push({email, name:email.split('@')[0], role:'member', uid:''});
-  await setDoc(boardDocRef(currentBoard.id), {members}, {merge:true});
+  const memberEmails = members.map(m=>m.email);
+  await setDoc(boardDocRef(currentBoard.id), {members, memberEmails}, {merge:true});
   document.getElementById('invite-email').value = '';
   showToast(`📧 ${email} invited!`);
   renderMembersList();
@@ -3234,7 +3242,8 @@ window.inviteMember = async function(){
 window.removeMember = async function(email){
   if(!confirm(`Remove ${email} from this board?`)) return;
   const members = (currentBoard.members||[]).filter(m=>m.email!==email);
-  await setDoc(boardDocRef(currentBoard.id), {members}, {merge:true});
+  const memberEmails = members.map(m=>m.email);
+  await setDoc(boardDocRef(currentBoard.id), {members, memberEmails}, {merge:true});
   renderMembersList();
   showToast('✅ Member removed');
 };
