@@ -2969,11 +2969,11 @@ async function openBoard(boardId){
   document.getElementById('board-view').classList.add('active');
 }
 
-function closeBoard(){
+window.closeBoard = function(){
   if(window._boardUnsub){ window._boardUnsub(); window._boardUnsub=null; }
   currentBoard = null;
   renderBoardsList();
-}
+};
 
 // ── Render kanban columns ──
 function renderBoardView(){
