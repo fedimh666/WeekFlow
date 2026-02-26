@@ -513,6 +513,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .board-member-av:first-child{margin-left:0;}
 .board-card-more{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;border-radius:6px;width:28px;height:28px;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
 .board-card:hover .board-card-more{opacity:1;}
+.board-card-del{background:rgba(255,255,255,.15);border:none;border-radius:7px;padding:4px 9px;color:#fff;cursor:pointer;font-size:14px;transition:background .15s;}
+.board-card-del:hover{background:rgba(255,80,80,.5);}
 .board-add-card{border:2px dashed var(--border);border-radius:16px;padding:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;font-weight:600;transition:all .2s;min-height:120px;}
 .board-add-card:hover{border-color:var(--ink);color:var(--ink);background:var(--bg);}
 
@@ -1291,7 +1293,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <button class="boards-back" onclick="closeBoard()">← All Boards</button>
           <div class="board-view-title" id="board-view-title">Board</div>
           <div class="board-members-row" id="board-members-row"></div>
-          <button class="board-invite-btn" onclick="openInviteModal()">👥 Invite</button>
+          <button class="board-invite-btn" id="board-invite-btn" onclick="openInviteModal()">👥 Invite</button>
+          <button class="board-invite-btn" id="board-delete-btn" onclick="deleteBoardFromView()" style="border-color:#FF6B6B;color:#FF6B6B;display:none;">🗑 Delete Board</button>
         </div>
         <div class="board-columns-wrap" id="board-columns-wrap"></div>
       </div>
@@ -1351,7 +1354,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <select id="card-modal-assignee"><option value="">— Unassigned —</option></select>
       </div>
       <div class="modal-btns">
-        <button class="m-cancel" style="color:#FF6B6B;border-color:#FF6B6B;" onclick="deleteCard()">🗑 Delete</button>
+        <span id="card-modal-del-wrap"></span>
         <button class="m-save" onclick="saveCard()">Save Card ✦</button>
       </div>
     </div>
@@ -1494,7 +1497,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged,signOut,signInWithEmailAndPassword,createUserWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,setDoc,getDoc,onSnapshot,collection,getDocs,query,where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore,doc,setDoc,getDoc,onSnapshot,collection,getDocs,query,where,deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ══════════════════════════════════════════
 // 🔥 FIREBASE CONFIG — weekflow-8e05f
@@ -2922,6 +2925,7 @@ async function renderBoardsList(){
     const card = document.createElement('div');
     card.className = 'board-card';
     card.style.background = board.color || 'linear-gradient(135deg,#FF6B6B,#FF9F43)';
+    const isOwnerCard = board.owner === currentUser.uid;
     card.innerHTML = `
       <div>
         <div class="board-card-name">${board.name}</div>
@@ -2931,7 +2935,12 @@ async function renderBoardsList(){
         <div class="board-card-members">
           ${members.slice(0,4).map(m=>`<div class="board-member-av" title="${m.name||m.email}">${(m.name||m.email)[0].toUpperCase()}</div>`).join('')}
         </div>
+        ${isOwnerCard ? `<button class="board-card-del" data-id="${board.id}" title="Delete board">🗑</button>` : ''}
       </div>`;
+    card.querySelector('.board-card-del')?.addEventListener('click', e => {
+      e.stopPropagation();
+      deleteBoard(board.id, board.name);
+    });
     card.addEventListener('click', () => openBoard(board.id));
     grid.appendChild(card);
   });
@@ -2969,7 +2978,10 @@ function closeBoard(){
 // ── Render kanban columns ──
 function renderBoardView(){
   if(!currentBoard) return;
+  const isOwner = currentBoard.owner === currentUser.uid;
   document.getElementById('board-view-title').textContent = currentBoard.name;
+  // Show/hide admin-only buttons
+  document.getElementById('board-delete-btn').style.display = isOwner ? '' : 'none';
   // Members avatars
   const membersRow = document.getElementById('board-members-row');
   const members = currentBoard.members || [];
@@ -2991,7 +3003,7 @@ function renderBoardView(){
       <div class="col-header">
         <input class="col-title-input" value="${col.title}" data-col-id="${col.id}" onblur="renameColumn('${col.id}', this.value)">
         <span class="col-count">${cards.length}</span>
-        <button class="col-menu-btn" onclick="deleteColumn('${col.id}')" title="Delete column">×</button>
+        ${isOwner ? `<button class="col-menu-btn" onclick="deleteColumn('${col.id}')" title="Delete column">×</button>` : ''}
       </div>
       <div class="col-cards" id="col-cards-${col.id}" data-col-id="${col.id}"></div>
       <button class="add-card-btn" onclick="openAddCard('${col.id}')">+ Add card</button>`;
@@ -3005,23 +3017,26 @@ function renderBoardView(){
     });
 
     // Drop zone
-    cardsEl.addEventListener('dragover', e => { e.preventDefault(); cardsEl.classList.add('drag-over'); });
-    cardsEl.addEventListener('dragleave', () => cardsEl.classList.remove('drag-over'));
+    cardsEl.addEventListener('dragenter', e => { e.preventDefault(); cardsEl.classList.add('drag-over'); });
+    cardsEl.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect='move'; cardsEl.classList.add('drag-over'); });
+    cardsEl.addEventListener('dragleave', e => { if(!cardsEl.contains(e.relatedTarget)) cardsEl.classList.remove('drag-over'); });
     cardsEl.addEventListener('drop', e => {
-      e.preventDefault(); cardsEl.classList.remove('drag-over');
+      e.preventDefault(); e.stopPropagation(); cardsEl.classList.remove('drag-over');
       const srcColId = e.dataTransfer.getData('srcColId');
       const cardId   = e.dataTransfer.getData('cardId');
-      if(srcColId === col.id) return;
+      if(!cardId || srcColId === col.id) return;
       moveCard(cardId, srcColId, col.id);
     });
   });
 
-  // Add column button
-  const addColBtn = document.createElement('button');
-  addColBtn.className = 'add-col-btn';
-  addColBtn.innerHTML = '+ Add Column';
-  addColBtn.addEventListener('click', addColumn);
-  wrap.appendChild(addColBtn);
+  // Add column button — owner only
+  if(isOwner){
+    const addColBtn = document.createElement('button');
+    addColBtn.className = 'add-col-btn';
+    addColBtn.innerHTML = '+ Add Column';
+    addColBtn.addEventListener('click', addColumn);
+    wrap.appendChild(addColBtn);
+  }
 }
 
 function createCardEl(card, colId){
@@ -3031,22 +3046,47 @@ function createCardEl(card, colId){
   el.dataset.cardId = card.id;
   const assigneeName = card.assignee ? (currentBoard.members||[]).find(m=>m.uid===card.assignee||m.email===card.assignee)?.name || card.assignee : '';
   el.innerHTML = `
-    <button class="k-card-del" onclick="quickDeleteCard(event,'${colId}','${card.id}')">✕</button>
+    ${currentBoard.owner===currentUser.uid ? `<button class="k-card-del" onclick="quickDeleteCard(event,'${colId}','${card.id}')">✕</button>` : ''}
     <div class="k-card-title">${card.title}</div>
     ${card.notes ? `<div class="k-card-notes">${card.notes.substring(0,80)}${card.notes.length>80?'...':''}</div>` : ''}
     <div class="k-card-meta">
       <span class="k-card-pri ${card.priority||'medium'}">${card.priority==='high'?'● High':card.priority==='low'?'● Low':'● Medium'}</span>
       ${assigneeName ? `<div class="k-card-assignee" title="${assigneeName}">${assigneeName[0].toUpperCase()}</div>` : ''}
     </div>`;
-  el.addEventListener('click', () => openCardModal(colId, card.id));
+  let dragged = false;
+  el.addEventListener('click', () => { if(!dragged) openCardModal(colId, card.id); });
   el.addEventListener('dragstart', e => {
+    dragged = true;
     el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('cardId', card.id);
     e.dataTransfer.setData('srcColId', colId);
   });
-  el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    setTimeout(() => { dragged = false; }, 100);
+  });
   return el;
 }
+
+// ── Delete board ──
+async function deleteBoard(boardId, boardName){
+  if(!confirm(`Delete "${boardName}" and all its cards? This cannot be undone.`)) return;
+  try {
+    await deleteDoc(boardDocRef(boardId));
+    showToast('🗑️ Board deleted');
+    await renderBoardsList();
+  } catch(e) {
+    showToast('⚠️ Could not delete board');
+    console.error(e);
+  }
+}
+
+window.deleteBoardFromView = async function(){
+  if(!currentBoard) return;
+  await deleteBoard(currentBoard.id, currentBoard.name);
+  closeBoard();
+};
 
 // ── Board CRUD ──
 window.openNewBoardModal = function(){
@@ -3116,6 +3156,7 @@ window.openAddCard = function(colId){
   document.getElementById('card-modal-notes').value = '';
   document.getElementById('card-modal-pri').value = 'medium';
   populateAssigneeSelect();
+  document.getElementById('card-modal-del-wrap').innerHTML = ''; // no delete on new card
   document.getElementById('card-modal').classList.add('show');
   setTimeout(()=>document.getElementById('card-modal-title').focus(), 100);
 };
@@ -3129,6 +3170,11 @@ function openCardModal(colId, cardId){
   document.getElementById('card-modal-notes').value = card.notes||'';
   document.getElementById('card-modal-pri').value = card.priority||'medium';
   populateAssigneeSelect(card.assignee);
+  // Show delete button only for board owner
+  const isOwner = currentBoard.owner === currentUser.uid;
+  document.getElementById('card-modal-del-wrap').innerHTML = isOwner
+    ? `<button class="m-cancel" style="color:#FF6B6B;border-color:#FF6B6B;" onclick="deleteCard()">🗑 Delete</button>`
+    : '';
   document.getElementById('card-modal').classList.add('show');
 }
 
