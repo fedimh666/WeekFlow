@@ -588,6 +588,72 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .boards-grid{grid-template-columns:1fr;padding:0 12px 24px;}
 }
 
+
+/* ══ HABITS PAGE ═══════════════════════════════════ */
+.habits-layout{padding:24px;max-width:1100px;margin:0 auto;}
+.habits-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.habits-title{font-family:'Fraunces',serif;font-size:26px;font-weight:900;}
+.habits-controls{display:flex;align-items:center;gap:10px;}
+.habits-view-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px;}
+.hvt-btn{padding:6px 14px;border-radius:7px;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.hvt-btn.active{background:var(--white);color:var(--ink);box-shadow:var(--shadow);}
+.add-habit-btn{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-family:'Fraunces',serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;gap:6px;}
+.add-habit-btn:hover{opacity:.85;}
+
+/* Grid */
+.habits-grid-wrap{background:var(--white);border-radius:18px;border:1px solid var(--border);overflow:auto;box-shadow:var(--shadow);}
+.habits-grid{display:grid;min-width:max-content;}
+.hg-corner{background:var(--white);position:sticky;left:0;z-index:3;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.hg-corner-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.hg-day-header{padding:10px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:1px solid var(--border);min-width:44px;}
+.hg-day-num{font-size:13px;font-weight:800;color:var(--ink);font-family:'Fraunces',serif;}
+.hg-day-label{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;}
+.hg-day-header.today-col-h .hg-day-num{color:#45aaf2;}
+.hg-day-header.today-col-h .hg-day-label{color:#45aaf2;}
+
+/* Habit row */
+.habit-row{display:contents;}
+.habit-row-label{background:var(--white);position:sticky;left:0;z-index:2;display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);min-width:180px;}
+.habit-row-label:hover .habit-del-btn{opacity:1;}
+.habit-emoji{font-size:18px;flex-shrink:0;}
+.habit-name{font-size:13px;font-weight:600;color:var(--ink);flex:1;}
+.habit-del-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;opacity:0;transition:opacity .15s;padding:2px 5px;border-radius:4px;}
+.habit-del-btn:hover{color:#FF6B6B;background:rgba(255,107,107,.1);}
+.habit-cell{display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);border-left:1px solid var(--border);min-width:44px;cursor:pointer;transition:background .15s;position:relative;}
+.habit-cell:hover{background:rgba(69,170,242,.06);}
+.habit-check{width:26px;height:26px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:14px;background:var(--white);}
+.habit-cell.done .habit-check{background:var(--ink);border-color:var(--ink);color:#fff;}
+.habit-cell.done .habit-check::after{content:'✓';}
+.habit-cell.future{opacity:.4;pointer-events:none;}
+.habit-cell.today-col-c{background:rgba(69,170,242,.04);}
+
+/* Streak & stats row */
+.habit-streak{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap;}
+.habit-streak.on-fire{color:#FF9F43;}
+
+/* Summary row at bottom */
+.hg-summary-label{background:var(--bg);position:sticky;left:0;z-index:2;padding:10px 20px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-top:2px solid var(--border);}
+.hg-summary-cell{background:var(--bg);display:flex;align-items:center;justify-content:center;border-top:2px solid var(--border);border-left:1px solid var(--border);min-width:44px;}
+.hg-summary-dot{width:26px;height:8px;border-radius:99px;background:var(--border);}
+.hg-summary-dot.full{background:#26de81;}
+.hg-summary-dot.partial{background:#f0c040;}
+
+/* Empty state */
+.habits-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.habits-empty-icon{font-size:52px;margin-bottom:12px;}
+.habits-empty-title{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--ink);margin-bottom:8px;}
+
+/* Add habit modal */
+.habit-emoji-picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.hep-btn{width:36px;height:36px;border-radius:8px;border:2px solid transparent;background:var(--bg);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.hep-btn.active,.hep-btn:hover{border-color:var(--ink);background:var(--white);}
+
+@media(max-width:768px){
+  .habits-layout{padding:12px 8px;}
+  .habit-row-label{min-width:130px;padding:8px 10px;}
+  .habits-title{font-size:20px;}
+}
+
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
 
 /* ══ POMODORO PAGE ══════════════════════════ */
@@ -947,6 +1013,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="tb-tab" onclick="showPage('notifications')" id="tab-notifications">🔔 Reminders</button>
       <button class="tb-tab" onclick="showPage('pomodoro')" id="tab-pomodoro" style="position:relative;">🍅 Focus<span class="pomo-running-dot" id="pomo-dot"></span></button>
       <button class="tb-tab" onclick="showPage('boards')" id="tab-boards">🗂️ Boards</button>
+      <button class="tb-tab" onclick="showPage('habits')" id="tab-habits">🎯 Habits</button>
     </div>
     <div class="tb-week-nav">
       <button class="tb-nav-btn" id="prev-week">◀</button>
@@ -1267,6 +1334,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <span class="mn-icon">🗂️</span>
         <span class="mn-label">Boards</span>
       </button>
+      <button class="mobile-nav-btn" id="mob-tab-habits" onclick="showPage('habits')">
+        <span class="mn-icon">🎯</span>
+        <span class="mn-label">Habits</span>
+      </button>
     </div>
   </nav>
 
@@ -1356,6 +1427,44 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="modal-btns">
         <span id="card-modal-del-wrap"></span>
         <button class="m-save" onclick="saveCard()">Save Card ✦</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ HABITS PAGE ══ -->
+  <div class="page" id="page-habits">
+    <div class="habits-layout">
+      <div class="habits-header">
+        <div>
+          <div class="habits-title">🎯 Habit Tracker</div>
+        </div>
+        <div class="habits-controls">
+          <div class="habits-view-toggle">
+            <button class="hvt-btn active" id="hvt-week" onclick="setHabitView('week')">Week</button>
+            <button class="hvt-btn" id="hvt-month" onclick="setHabitView('month')">Month</button>
+          </div>
+          <button class="add-habit-btn" onclick="openAddHabitModal()">+ Add Habit</button>
+        </div>
+      </div>
+      <div id="habits-grid-container"></div>
+    </div>
+  </div>
+
+  <!-- ADD HABIT MODAL -->
+  <div class="modal-overlay" id="add-habit-modal">
+    <div class="modal">
+      <h3>Add New Habit</h3>
+      <div class="field"><label>Habit Name</label><input id="habit-name-input" placeholder="e.g. Morning Run, Read 20 min..."></div>
+      <div class="field">
+        <label>Pick an Emoji</label>
+        <div class="habit-emoji-picker" id="habit-emoji-picker">
+          ${['🏃','📚','💧','🧘','💪','🥗','😴','🎯','✍️','🎵','🧠','☀️','🚴','🍎','🧹','📝','💊','🙏','🛁','📵'].map(e=>`<button class="hep-btn" data-emoji="${e}">${e}</button>`).join('')}
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="m-cancel" onclick="document.getElementById('add-habit-modal').classList.remove('show')">Cancel</button>
+        <button class="m-save" onclick="saveNewHabit()">Add Habit ✦</button>
       </div>
     </div>
   </div>
@@ -1676,6 +1785,7 @@ window.showPage=function(page){
   if(page==='notifications'){renderNotifLog();}
   if(page==='pomodoro'){renderPomoTaskPicker();}
   if(page==='boards'){renderBoardsList();}
+  if(page==='habits'){renderHabitsPage();}
 };
 
 // ══ RENDER PLANNER ═════════════════════════
@@ -3301,6 +3411,211 @@ window.removeMember = async function(email){
   });
 });
 document.getElementById('card-modal-title')?.addEventListener('keydown', e=>{ if(e.key==='Enter') window.saveCard(); });
+
+
+
+// ══ HABITS TRACKER ═══════════════════════════════════════
+
+let habitView = 'week'; // 'week' | 'month'
+let habits = [];        // [{id, name, emoji, createdAt}]
+let habitLogs = {};     // {'habitId_YYYY-MM-DD': true}
+let selectedHabitEmoji = '🎯';
+
+function habitsRef(){ return doc(db,'users',currentUser.uid,'habits','data'); }
+
+async function loadHabits(){
+  try {
+    const snap = await getDoc(habitsRef());
+    if(snap.exists()){
+      const d = snap.data();
+      habits = d.habits || [];
+      habitLogs = d.logs || {};
+    } else {
+      habits = []; habitLogs = {};
+    }
+  } catch(e){ console.error('loadHabits:', e); }
+}
+
+async function saveHabits(){
+  await setDoc(habitsRef(), {habits, logs: habitLogs}, {merge:false});
+}
+
+// ── Render ──
+async function renderHabitsPage(){
+  await loadHabits();
+  renderHabitsGrid();
+}
+
+window.setHabitView = function(v){
+  habitView = v;
+  document.getElementById('hvt-week').classList.toggle('active', v==='week');
+  document.getElementById('hvt-month').classList.toggle('active', v==='month');
+  renderHabitsGrid();
+};
+
+function renderHabitsGrid(){
+  const container = document.getElementById('habits-grid-container');
+  if(!container) return;
+
+  if(!habits.length){
+    container.innerHTML = `<div class="habits-empty">
+      <div class="habits-empty-icon">🎯</div>
+      <div class="habits-empty-title">No habits yet</div>
+      <div style="color:var(--muted);font-size:13px;">Click "+ Add Habit" to start tracking</div>
+    </div>`;
+    return;
+  }
+
+  // Build date range
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let days = [];
+  if(habitView === 'week'){
+    // Mon to Sun of current week
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - ((today.getDay()+6)%7));
+    for(let i=0;i<7;i++){
+      const d = new Date(mon); d.setDate(mon.getDate()+i);
+      days.push(d);
+    }
+  } else {
+    // Full current month
+    const y = today.getFullYear(), m = today.getMonth();
+    const daysInMonth = new Date(y,m+1,0).getDate();
+    for(let i=1;i<=daysInMonth;i++){
+      days.push(new Date(y,m,i));
+    }
+  }
+
+  const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const todayStr = fmtDate(today);
+
+  // Grid template columns: label col + one col per day
+  const gridCols = `180px repeat(${days.length}, 44px)`;
+
+  let html = `<div class="habits-grid-wrap"><div class="habits-grid" style="grid-template-columns:${gridCols};">`;
+
+  // Header row
+  html += `<div class="hg-corner"><span class="hg-corner-label">Habit</span></div>`;
+  days.forEach(d => {
+    const ds = fmtDate(d);
+    const isToday = ds === todayStr;
+    html += `<div class="hg-day-header${isToday?' today-col-h':''}">
+      <div class="hg-day-num">${d.getDate()}</div>
+      <div class="hg-day-label">${dayLabels[d.getDay()]}</div>
+    </div>`;
+  });
+
+  // Habit rows
+  habits.forEach(habit => {
+    let streak = 0;
+    // calculate current streak
+    const tempD = new Date(today);
+    while(true){
+      const k = `${habit.id}_${fmtDate(tempD)}`;
+      if(habitLogs[k]){ streak++; tempD.setDate(tempD.getDate()-1); }
+      else break;
+    }
+    const onFire = streak >= 3;
+
+    html += `<div class="habit-row-label">
+      <span class="habit-emoji">${habit.emoji||'🎯'}</span>
+      <span class="habit-name">${habit.name}</span>
+      <span class="habit-streak${onFire?' on-fire':''}">${streak>0?(onFire?'🔥':'⚡')+streak:''}</span>
+      <button class="habit-del-btn" onclick="deleteHabit('${habit.id}')" title="Remove habit">✕</button>
+    </div>`;
+
+    days.forEach(d => {
+      const ds = fmtDate(d);
+      const key = `${habit.id}_${ds}`;
+      const done = !!habitLogs[key];
+      const isFuture = d > today;
+      const isToday = ds === todayStr;
+      html += `<div class="habit-cell${done?' done':''}${isFuture?' future':''}${isToday?' today-col-c':''}"
+        onclick="toggleHabit('${habit.id}','${ds}')" data-key="${key}">
+        <div class="habit-check"></div>
+      </div>`;
+    });
+  });
+
+  // Summary row — how many habits done per day
+  html += `<div class="hg-summary-label">Daily Score</div>`;
+  days.forEach(d => {
+    const ds = fmtDate(d);
+    const doneCount = habits.filter(h => habitLogs[`${h.id}_${ds}`]).length;
+    const full = doneCount === habits.length && habits.length > 0;
+    const partial = doneCount > 0 && !full;
+    html += `<div class="hg-summary-cell"><div class="hg-summary-dot${full?' full':partial?' partial':''}"></div></div>`;
+  });
+
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+function fmtDate(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+window.toggleHabit = async function(habitId, dateStr){
+  const key = `${habitId}_${dateStr}`;
+  if(habitLogs[key]) delete habitLogs[key];
+  else habitLogs[key] = true;
+  // Optimistic UI update
+  const cell = document.querySelector(`[data-key="${key}"]`);
+  if(cell) cell.classList.toggle('done', !!habitLogs[key]);
+  // Update streak display
+  renderHabitsGrid();
+  await saveHabits();
+};
+
+window.deleteHabit = async function(habitId){
+  if(!confirm('Remove this habit? All your check-ins will be lost.')) return;
+  habits = habits.filter(h => h.id !== habitId);
+  // Clean up logs
+  Object.keys(habitLogs).forEach(k => { if(k.startsWith(habitId+'_')) delete habitLogs[k]; });
+  renderHabitsGrid();
+  await saveHabits();
+  showToast('🗑️ Habit removed');
+};
+
+// ── Add habit modal ──
+window.openAddHabitModal = function(){
+  document.getElementById('habit-name-input').value = '';
+  selectedHabitEmoji = '🎯';
+  // Reset emoji picker
+  document.querySelectorAll('.hep-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.emoji === '🎯');
+  });
+  document.getElementById('add-habit-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('habit-name-input').focus(), 100);
+};
+
+document.getElementById('habit-emoji-picker')?.addEventListener('click', e => {
+  const btn = e.target.closest('.hep-btn');
+  if(!btn) return;
+  selectedHabitEmoji = btn.dataset.emoji;
+  document.querySelectorAll('.hep-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+window.saveNewHabit = async function(){
+  const name = document.getElementById('habit-name-input').value.trim();
+  if(!name){ showToast('⚠️ Enter a habit name'); return; }
+  habits.push({ id: uid(), name, emoji: selectedHabitEmoji, createdAt: new Date().toISOString() });
+  await saveHabits();
+  document.getElementById('add-habit-modal').classList.remove('show');
+  showToast('🎯 Habit added!');
+  renderHabitsGrid();
+};
+
+document.getElementById('habit-name-input')?.addEventListener('keydown', e => {
+  if(e.key==='Enter') window.saveNewHabit();
+});
+
+document.getElementById('add-habit-modal')?.addEventListener('click', e => {
+  if(e.target===document.getElementById('add-habit-modal'))
+    document.getElementById('add-habit-modal').classList.remove('show');
+});
 
 
 // ── Auth enter key ────────────────────────
