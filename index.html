@@ -3405,9 +3405,9 @@ function renderHabitsGrid(){
   // Filter habits by frequency for current view
   const visibleHabits = habits.filter(h => {
     const f = h.freq || 'daily';
-    if(f === 'daily') return true;       // daily shows everywhere
-    if(f === 'weekly') return habitView === 'week';
-    if(f === 'monthly') return habitView === 'month';
+    if(f === 'daily') return true;            // daily shows in both views
+    if(f === 'weekly') return true;           // weekly shows in both views
+    if(f === 'monthly') return habitView === 'month'; // monthly only in month view
     return true;
   });
 
