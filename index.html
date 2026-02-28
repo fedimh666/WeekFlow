@@ -1009,8 +1009,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="tb-tabs">
       <button class="tb-tab active" onclick="showPage('planner')" id="tab-planner">📅 Planner</button>
       <button class="tb-tab" onclick="showPage('dashboard')" id="tab-dashboard">📊 Dashboard</button>
-      <button class="tb-tab" onclick="showPage('templates')" id="tab-templates">📋 Templates</button>
-      <button class="tb-tab" onclick="showPage('notifications')" id="tab-notifications">🔔 Reminders</button>
       <button class="tb-tab" onclick="showPage('pomodoro')" id="tab-pomodoro" style="position:relative;">🍅 Focus<span class="pomo-running-dot" id="pomo-dot"></span></button>
       <button class="tb-tab" onclick="showPage('boards')" id="tab-boards">🗂️ Boards</button>
       <button class="tb-tab" onclick="showPage('habits')" id="tab-habits">🎯 Habits</button>
@@ -1032,7 +1030,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <!-- Dark mode toggle -->
       <button class="dark-toggle" id="dark-toggle" title="Toggle dark mode" onclick="toggleDarkMode()">🌙</button>
       <button class="tb-install-btn" id="tb-install-btn" title="Install App">📲 Install App</button>
-      <button class="tb-notif-btn" title="Notifications" onclick="showPage('notifications')">🔔<span class="notif-badge" id="notif-badge"></span></button>
       <div class="tb-avatar" id="tb-avatar">?</div>
       <div class="tb-name" id="tb-name">—</div>
       <span class="saving-dot" id="saving-dot" style="display:none"></span>
@@ -1069,7 +1066,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="template-bar">
       <div class="template-bar-label">Templates:</div>
       <div id="template-chips"></div>
-      <button class="template-chip save-btn" onclick="showPage('templates')">💾 Save This Week</button>
     </div>
 
     <div class="table-wrap">
@@ -1123,99 +1119,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 
   <!-- ══ TEMPLATES PAGE ══ -->
-  <div class="page" id="page-templates">
-    <div class="dash-header"><div class="dash-title">Week Templates</div><div class="dash-sub">Save your weekly routine and load it anytime with one click.</div></div>
-    <div class="templates-layout">
-      <div class="tmpl-card">
-        <div class="tmpl-title">💾 Save Current Week</div>
-        <div class="tmpl-sub">Turn this week's tasks into a reusable template. Perfect for recurring routines.</div>
-        <div class="tmpl-save-form">
-          <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Template Name</label>
-          <input type="text" class="tmpl-input" id="tmpl-name-input" placeholder="e.g. My Regular Week, Work Sprint..."></div>
-          <div><label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Preview</label>
-          <div class="tmpl-preview" id="tmpl-preview"></div></div>
-          <button class="tmpl-save-btn" onclick="saveTemplate()">Save as Template ✦</button>
-        </div>
-      </div>
-      <div class="tmpl-card">
-        <div class="tmpl-title">📋 Your Templates</div>
-        <div class="tmpl-sub">Click "Load" to instantly fill this week with a template's tasks.</div>
-        <div class="tmpl-list" id="tmpl-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ NOTIFICATIONS PAGE ══ -->
-  <div class="page" id="page-notifications">
-    <div class="dash-header"><div class="dash-title">Reminders & Notifications</div><div class="dash-sub">Stay on track with smart daily reminders.</div></div>
-    <div class="notif-layout">
-      <div class="notif-card">
-        <div class="notif-title">⏰ Daily Reminder</div>
-        <div class="notif-sub">Get a morning notification showing how many tasks you have today. You must have the app open for browser notifications to work.</div>
-        <div class="perm-warning" id="perm-warning">⚠️ Notification permission was denied. Please click the 🔒 lock icon in your browser address bar and allow notifications for this page, then refresh.</div>
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="tl">Morning Summary</div><div class="ts">Daily briefing with today's task count</div></div>
-          <label class="toggle"><input type="checkbox" id="notif-morning" onchange="saveNotifSettings()"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="tl">Weekly Review</div><div class="ts">Monday morning — recap of last week's completion</div></div>
-          <label class="toggle"><input type="checkbox" id="notif-weekly" onchange="saveNotifSettings()"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><div class="tl">Task Completion Celebration</div><div class="ts">Get notified when you complete all tasks for the day 🎉</div></div>
-          <label class="toggle"><input type="checkbox" id="notif-complete" onchange="saveNotifSettings()"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="time-picker-row">
-          <label>Morning reminder at:</label>
-          <input type="time" class="time-input" id="notif-time" value="08:00" onchange="saveNotifSettings()">
-        </div>
-        <button class="notif-btn" onclick="requestNotifPermission()">🔔 Enable Notifications</button>
-      </div>
-      <div class="notif-card">
-        <div class="notif-title">📬 Notification Log</div>
-        <div class="notif-sub">Recent notifications sent to you.</div>
-        <div class="notif-log" id="notif-log"></div>
-        <button class="notif-btn" style="margin-top:16px;background:var(--bg);color:var(--ink);border:1.5px solid var(--border);" onclick="sendTestNotif()">🧪 Send Test Notification</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Install FAB (hidden on mobile, shown on desktop) -->
-  <button class="install-fab hidden" id="install-fab">
-    <span class="fab-icon">📲</span> Install App
-  </button>
-
-  <!-- ══ iOS INSTALL INSTRUCTIONS MODAL ══ -->
-  <div class="ios-modal" id="ios-modal">
-    <div class="ios-modal-box">
-      <div class="ios-modal-title">📲 Install WeekFlow</div>
-      <div class="ios-modal-sub">Add WeekFlow to your home screen for the full app experience — works offline too!</div>
-      <div class="ios-steps">
-        <div class="ios-step">
-          <div class="ios-step-num">1</div>
-          <div class="ios-step-icon">⬆️</div>
-          <div class="ios-step-text">Tap the Share button
-            <span>The box with an arrow at the bottom of Safari</span>
-          </div>
-        </div>
-        <div class="ios-step">
-          <div class="ios-step-num">2</div>
-          <div class="ios-step-icon">➕</div>
-          <div class="ios-step-text">Tap "Add to Home Screen"
-            <span>Scroll down in the share menu to find it</span>
-          </div>
-        </div>
-        <div class="ios-step">
-          <div class="ios-step-num">3</div>
-          <div class="ios-step-icon">✅</div>
-          <div class="ios-step-text">Tap "Add" to confirm
-            <span>WeekFlow will appear on your home screen!</span>
-          </div>
-        </div>
-      </div>
-      <button class="ios-close-btn" onclick="document.getElementById('ios-modal').classList.remove('show')">Got it!</button>
-    </div>
-  </div>
 
   <!-- ══ POMODORO PAGE ══ -->
   <div class="page" id="page-pomodoro">
@@ -1317,14 +1220,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <span class="mn-icon">📊</span>
         <span class="mn-label">Dashboard</span>
       </button>
-      <button class="mobile-nav-btn" id="mob-tab-templates" onclick="showPage('templates')">
-        <span class="mn-icon">📋</span>
-        <span class="mn-label">Templates</span>
-      </button>
-      <button class="mobile-nav-btn" id="mob-tab-notifications" onclick="showPage('notifications')">
-        <span class="mn-icon">🔔</span>
-        <span class="mn-label">Reminders</span>
-      </button>
+
+
       <button class="mobile-nav-btn" id="mob-tab-pomodoro" onclick="showPage('pomodoro')" style="position:relative;">
         <span class="mn-icon">🍅</span>
         <span class="mn-label" style="color:inherit;">Focus</span>
@@ -1786,8 +1683,6 @@ onAuthStateChanged(auth,async user=>{
     renderTemplateChips();
     startNotifTimer();
     renderDashboard();
-    renderNotifLog();
-    renderTemplatesPage();
   } else {
     currentUser=null;weekData={};allWeekData={};templates=[];
     document.getElementById('auth-screen').classList.remove('hidden');
@@ -1809,8 +1704,6 @@ window.showPage=function(page){
   const mwb=document.getElementById('mobile-week-bar');
   if(mwb)mwb.style.display=(page==='planner')?'flex':'none';
   if(page==='dashboard'){renderDashboard();}
-  if(page==='templates'){renderTemplatesPage();}
-  if(page==='notifications'){renderNotifLog();}
   if(page==='pomodoro'){renderPomoTaskPicker();}
   if(page==='boards'){renderBoardsList();}
   if(page==='habits'){renderHabitsPage();}
@@ -2611,26 +2504,11 @@ window.saveTemplate=async function(){
   }
   templates.push(tmpl);await saveUserMeta();
   document.getElementById('tmpl-name-input').value='';
-  renderTemplatesPage();renderTemplateChips();
+  
   showToast('📋 Template saved!');
 };
 
-function renderTemplatesPage(){
-  updateTemplatePreview();
-  const list=document.getElementById('tmpl-list');if(!list)return;
-  if(!templates.length){
-    list.innerHTML=`<div class="tmpl-empty"><div class="tmpl-empty-icon">📭</div><p>No templates yet.<br>Save your first week template!</p></div>`;return;
-  }
-  list.innerHTML='';
-  templates.forEach(tmpl=>{
-    let taskCount=0;Object.values(tmpl.days).forEach(tasks=>taskCount+=tasks.length);
-    const item=document.createElement('div');item.className='tmpl-item';
-    item.innerHTML=`<div class="tmpl-item-icon">📋</div><div class="tmpl-item-info"><div class="tmpl-item-name">${tmpl.name}</div><div class="tmpl-item-count">${taskCount} tasks across ${Object.keys(tmpl.days).length} days</div></div><div class="tmpl-item-actions"><button class="tmpl-load-btn" data-id="${tmpl.id}">Load</button><button class="tmpl-del-btn" data-id="${tmpl.id}">Delete</button></div>`;
-    item.querySelector('.tmpl-load-btn').addEventListener('click',()=>loadTemplate(tmpl.id));
-    item.querySelector('.tmpl-del-btn').addEventListener('click',()=>deleteTemplate(tmpl.id));
-    list.appendChild(item);
-  });
-}
+
 
 function renderTemplateChips(){
   const wrap=document.getElementById('template-chips');if(!wrap)return;
@@ -2659,7 +2537,7 @@ async function loadTemplate(id){
 async function deleteTemplate(id){
   if(!confirm('Delete this template?'))return;
   templates=templates.filter(t=>t.id!==id);
-  await saveUserMeta();renderTemplatesPage();renderTemplateChips();showToast('🗑️ Template deleted');
+  await saveUserMeta();showToast('🗑️ Template deleted');
 }
 
 // ══ NOTIFICATIONS ═══════════════════════════
@@ -2680,20 +2558,10 @@ function sendNotif(title,body){
 function addNotifLog(title,body){
   notifLog.unshift({title,body,time:new Date().toISOString()});
   if(notifLog.length>20)notifLog=notifLog.slice(0,20);
-  saveUserMeta();renderNotifLog();
+  saveUserMeta();
 }
 
-function renderNotifLog(){
-  const log=document.getElementById('notif-log');if(!log)return;
-  if(!notifLog.length){log.innerHTML='<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No notifications yet.<br>Enable notifications above!</div>';return;}
-  log.innerHTML='';
-  notifLog.forEach(n=>{
-    const t=new Date(n.time);
-    const item=document.createElement('div');item.className='notif-log-item';
-    item.innerHTML=`<div class="notif-log-icon">🔔</div><div><div class="notif-log-text">${n.title} — ${n.body}</div><div class="notif-log-time">${t.toLocaleDateString()} ${t.toLocaleTimeString()}</div></div>`;
-    log.appendChild(item);
-  });
-}
+
 
 window.saveNotifSettings=function(){
   notifSettings.morning=document.getElementById('notif-morning').checked;
