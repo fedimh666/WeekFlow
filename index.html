@@ -3363,28 +3363,28 @@ function renderHabitsGrid(){
   }
 
   // Build date range
-  const today = new Date();
-  today.setHours(23,59,59,999); // end of day so today's cells are not marked as future
+  const now = new Date();
+  const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   let days = [];
   if(habitView === 'week'){
     // Mon to Sun of current week
-    const mon = new Date(today);
-    mon.setDate(today.getDate() - ((today.getDay()+6)%7));
+    const mon = new Date(now);
+    mon.setHours(0,0,0,0);
+    mon.setDate(now.getDate() - ((now.getDay()+6)%7));
     for(let i=0;i<7;i++){
       const d = new Date(mon); d.setDate(mon.getDate()+i);
       days.push(d);
     }
   } else {
     // Full current month
-    const y = today.getFullYear(), m = today.getMonth();
-    const daysInMonth = new Date(y,m+1,0).getDate();
+    const y = now.getFullYear(), mo = now.getMonth();
+    const daysInMonth = new Date(y, mo+1, 0).getDate();
     for(let i=1;i<=daysInMonth;i++){
-      days.push(new Date(y,m,i));
+      days.push(new Date(y, mo, i));
     }
   }
 
   const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const todayStr = fmtDate(today);
 
   // Grid template columns: label col + one col per day
   const gridCols = `180px repeat(${days.length}, 44px)`;
@@ -3416,7 +3416,6 @@ function renderHabitsGrid(){
     let streak = 0;
     // calculate current streak from today backwards
     const tempD = new Date();
-    tempD.setHours(0,0,0,0);
     while(true){
       const k = `${habit.id}_${fmtDate(tempD)}`;
       if(habitLogs[k]){ streak++; tempD.setDate(tempD.getDate()-1); }
@@ -3437,9 +3436,9 @@ function renderHabitsGrid(){
       const ds = fmtDate(d);
       const key = `${habit.id}_${ds}`;
       const done = !!habitLogs[key];
-      const isFuture = ds > todayStr; // compare strings YYYY-MM-DD — safe and correct
       const isToday = ds === todayStr;
-      html += `<div class="habit-cell${done?' done':''}${isFuture?' future':''}${isToday?' today-col-c':''}"
+      const isFuture = ds > todayStr;
+      html += `<div class="habit-cell${done?' done':''}${isToday?' today-col-c':''}"
         onclick="toggleHabit('${habit.id}','${ds}')" data-key="${key}">
         <div class="habit-check"></div>
       </div>`;
@@ -3463,6 +3462,7 @@ function renderHabitsGrid(){
 function fmtDate(d){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
+// fmtDate always uses local date parts - safe for habit keys
 
 window.toggleHabit = async function(habitId, dateStr){
   const key = `${habitId}_${dateStr}`;
