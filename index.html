@@ -590,7 +590,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 
 /* ══ HABITS PAGE — PRO DESIGN ═══════════════════════ */
-.habits-layout{padding:28px 32px;max-width:1200px;margin:0 auto;}
+.habits-layout{padding:28px 32px;}
 .habits-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px;}
 .habits-title-wrap{}
 .habits-title{font-family:'Fraunces',serif;font-size:32px;font-weight:900;line-height:1.1;}
@@ -605,14 +605,14 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 /* Grid wrapper */
 .habits-grid-wrap{background:var(--white);border-radius:20px;border:1px solid var(--border);overflow:hidden;box-shadow:0 4px 32px rgba(26,18,8,.07);width:100%;}
-.habits-grid{display:grid;min-width:max-content;}
+.habits-grid{display:grid;width:100%;}
 
 /* Corner header */
-.hg-corner{background:var(--white);position:sticky;left:0;z-index:3;border-bottom:2px solid var(--border);padding:18px 24px;display:flex;align-items:center;gap:8px;min-width:220px;}
+.hg-corner{background:var(--white);position:sticky;left:0;z-index:3;border-bottom:2px solid var(--border);padding:18px 24px;display:flex;align-items:center;gap:8px;width:240px;flex-shrink:0;}
 .hg-corner-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
 
 /* Day headers */
-.hg-day-header{padding:14px 8px 12px;text-align:center;border-bottom:2px solid var(--border);border-left:1px solid var(--border);min-width:72px;transition:background .15s;}
+.hg-day-header{padding:14px 8px 12px;text-align:center;border-bottom:2px solid var(--border);border-left:1px solid var(--border);transition:background .15s;}
 .hg-day-num{font-size:18px;font-weight:900;color:var(--ink);font-family:'Fraunces',serif;line-height:1;}
 .hg-day-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
 .hg-day-header.today-col-h{background:var(--ink);}
@@ -620,7 +620,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .hg-day-header.today-col-h .hg-day-label{color:rgba(255,255,255,.6);}
 
 /* Habit row label */
-.habit-row-label{background:var(--white);position:sticky;left:0;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--border);border-right:2px solid var(--border);min-width:220px;transition:background .15s;}
+.habit-row-label{background:var(--white);position:sticky;left:0;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--border);border-right:2px solid var(--border);width:240px;flex-shrink:0;transition:background .15s;}
 .habit-row-label:hover{background:var(--bg);}
 .habit-row-label:hover .habit-del-btn{opacity:1;}
 .habit-emoji{font-size:22px;flex-shrink:0;}
@@ -632,9 +632,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .habit-del-btn:hover{color:#FF6B6B;background:rgba(255,107,107,.1);}
 
 /* Habit cells */
-.habit-cell{display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);border-left:1px solid var(--border);min-width:72px;min-height:58px;cursor:pointer;transition:background .15s;position:relative;}
+.habit-cell{display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);border-left:1px solid var(--border);min-height:68px;cursor:pointer;transition:background .15s;position:relative;}
 .habit-cell:hover{background:rgba(69,170,242,.05);}
-.habit-check{width:32px;height:32px;border-radius:9px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.4,.64,1);font-size:16px;background:var(--white);}
+.habit-check{width:36px;height:36px;border-radius:10px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.4,.64,1);font-size:18px;background:var(--white);}
 .habit-cell:hover .habit-check{border-color:#45aaf2;transform:scale(1.08);}
 .habit-cell.done .habit-check{background:var(--ink);border-color:var(--ink);color:#fff;transform:scale(1.05);}
 .habit-cell.done .habit-check::after{content:'✓';font-weight:900;}
@@ -642,8 +642,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .habit-cell.today-col-c .habit-check{border-color:#45aaf2;}
 
 /* Summary row */
-.hg-summary-label{background:var(--bg);position:sticky;left:0;z-index:2;padding:14px 24px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-top:2px solid var(--border);min-width:220px;display:flex;align-items:center;}
-.hg-summary-cell{background:var(--bg);display:flex;align-items:center;justify-content:center;border-top:2px solid var(--border);border-left:1px solid var(--border);min-width:72px;min-height:48px;}
+.hg-summary-label{background:var(--bg);position:sticky;left:0;z-index:2;padding:14px 24px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-top:2px solid var(--border);width:240px;flex-shrink:0;display:flex;align-items:center;}
+.hg-summary-cell{background:var(--bg);display:flex;align-items:center;justify-content:center;border-top:2px solid var(--border);border-left:1px solid var(--border);min-height:52px;}
 .hg-summary-pill{height:10px;width:38px;border-radius:99px;background:var(--border);transition:background .3s;}
 .hg-summary-pill.full{background:linear-gradient(90deg,#26de81,#45aaf2);}
 .hg-summary-pill.partial{background:#f0c040;}
@@ -3394,7 +3394,7 @@ function renderHabitsGrid(){
   const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
   // Grid template columns: label col + one col per day
-  const gridCols = `180px repeat(${days.length}, 44px)`;
+  const gridCols = `240px repeat(${days.length}, 1fr)`;
 
   // Week range label
   const weekStart = days[0];
