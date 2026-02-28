@@ -1381,9 +1381,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="field">
         <label>Frequency</label>
         <div style="display:flex;gap:8px;margin-top:6px;">
-          <button class="hfreq-btn active" data-freq="daily" onclick="selectHabitFreq(this,'daily')" style="flex:1;padding:9px;border-radius:9px;border:2px solid var(--ink);background:var(--ink);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">📅 Daily</button>
-          <button class="hfreq-btn" data-freq="weekly" onclick="selectHabitFreq(this,'weekly')" style="flex:1;padding:9px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">📆 Weekly</button>
-          <button class="hfreq-btn" data-freq="monthly" onclick="selectHabitFreq(this,'monthly')" style="flex:1;padding:9px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">🗓️ Monthly</button>
+          <button class="hfreq-btn" data-freq="daily" style="flex:1;padding:9px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">📅 Daily</button>
+          <button class="hfreq-btn" data-freq="weekly" style="flex:1;padding:9px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">📆 Weekly</button>
+          <button class="hfreq-btn" data-freq="monthly" style="flex:1;padding:9px;border-radius:9px;border:2px solid var(--border);background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">🗓️ Monthly</button>
         </div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="freq-hint">Shows in all views every day</div>
       </div>
@@ -3488,7 +3488,7 @@ window.deleteHabit = async function(habitId){
 // ── Add habit modal ──
 let selectedHabitFreq = 'daily';
 
-window.selectHabitFreq = function(btn, freq){
+function applyFreqUI(freq){
   selectedHabitFreq = freq;
   document.querySelectorAll('.hfreq-btn').forEach(b => {
     const active = b.dataset.freq === freq;
@@ -3501,8 +3501,16 @@ window.selectHabitFreq = function(btn, freq){
     weekly: 'Shows in Week view only',
     monthly: 'Shows in Month view only'
   };
-  document.getElementById('freq-hint').textContent = hints[freq];
-};
+  const hintEl = document.getElementById('freq-hint');
+  if(hintEl) hintEl.textContent = hints[freq] || '';
+}
+
+// Attach click listener once after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.hfreq-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyFreqUI(btn.dataset.freq));
+  });
+});
 
 window.openAddHabitModal = function(){
   document.getElementById('habit-name-input').value = '';
@@ -3512,8 +3520,8 @@ window.openAddHabitModal = function(){
   document.querySelectorAll('.hep-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.emoji === '🎯');
   });
-  // Reset freq buttons
-  window.selectHabitFreq(null, 'daily');
+  // Reset freq to daily
+  applyFreqUI('daily');
   document.getElementById('add-habit-modal').classList.add('show');
   setTimeout(()=>document.getElementById('habit-name-input').focus(), 100);
 };
@@ -3529,11 +3537,15 @@ document.getElementById('habit-emoji-picker')?.addEventListener('click', e => {
 window.saveNewHabit = async function(){
   const name = document.getElementById('habit-name-input').value.trim();
   if(!name){ showToast('⚠️ Enter a habit name'); return; }
-  habits.push({ id: uid(), name, emoji: selectedHabitEmoji, freq: selectedHabitFreq, createdAt: new Date().toISOString() });
+  const newFreq = selectedHabitFreq;
+  habits.push({ id: uid(), name, emoji: selectedHabitEmoji, freq: newFreq, createdAt: new Date().toISOString() });
   await saveHabits();
   document.getElementById('add-habit-modal').classList.remove('show');
+  // Auto-switch to the right view so user sees the new habit immediately
+  if(newFreq === 'monthly' && habitView !== 'month') window.setHabitView('month');
+  else if(newFreq === 'weekly' && habitView !== 'week') window.setHabitView('week');
+  else renderHabitsGrid();
   showToast('🎯 Habit added!');
-  renderHabitsGrid();
 };
 
 document.getElementById('habit-name-input')?.addEventListener('keydown', e => {
