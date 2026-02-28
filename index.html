@@ -601,7 +601,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .add-habit-btn:hover{opacity:.85;}
 
 /* Grid */
-.habits-grid-wrap{background:var(--white);border-radius:18px;border:1px solid var(--border);overflow:auto;box-shadow:var(--shadow);}
+.habits-grid-wrap{background:var(--white);border-radius:18px;border:1px solid var(--border);overflow-x:auto;overflow-y:visible;box-shadow:var(--shadow);width:100%;}
 .habits-grid{display:grid;min-width:max-content;}
 .hg-corner{background:var(--white);position:sticky;left:0;z-index:3;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .hg-corner-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
@@ -3364,7 +3364,7 @@ function renderHabitsGrid(){
 
   // Build date range
   const today = new Date();
-  today.setHours(0,0,0,0);
+  today.setHours(23,59,59,999); // end of day so today's cells are not marked as future
   let days = [];
   if(habitView === 'week'){
     // Mon to Sun of current week
@@ -3414,8 +3414,9 @@ function renderHabitsGrid(){
   // Habit rows
   visibleHabits.forEach(habit => {
     let streak = 0;
-    // calculate current streak
-    const tempD = new Date(today);
+    // calculate current streak from today backwards
+    const tempD = new Date();
+    tempD.setHours(0,0,0,0);
     while(true){
       const k = `${habit.id}_${fmtDate(tempD)}`;
       if(habitLogs[k]){ streak++; tempD.setDate(tempD.getDate()-1); }
@@ -3436,7 +3437,7 @@ function renderHabitsGrid(){
       const ds = fmtDate(d);
       const key = `${habit.id}_${ds}`;
       const done = !!habitLogs[key];
-      const isFuture = d > today;
+      const isFuture = ds > todayStr; // compare strings YYYY-MM-DD — safe and correct
       const isToday = ds === todayStr;
       html += `<div class="habit-cell${done?' done':''}${isFuture?' future':''}${isToday?' today-col-c':''}"
         onclick="toggleHabit('${habit.id}','${ds}')" data-key="${key}">
