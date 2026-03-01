@@ -723,6 +723,102 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .hg-summary-pill{width:18px;height:6px;}
 }
 
+
+/* ══ LANDING PAGE ══════════════════════════════════ */
+#landing{position:fixed;inset:0;z-index:190;overflow-y:auto;background:#0e0c0a;display:flex;flex-direction:column;}
+#landing.hidden{display:none;}
+
+/* Grain overlay */
+#landing::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:1;}
+
+.land-nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid rgba(255,255,255,.06);}
+.land-logo{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:#fff;}
+.land-logo span{background:linear-gradient(135deg,#FF6B6B,#FF9F43);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.land-nav-btns{display:flex;gap:10px;align-items:center;}
+.land-signin-btn{padding:8px 20px;border-radius:99px;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.8);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.land-signin-btn:hover{background:rgba(255,255,255,.08);}
+.land-start-btn{padding:9px 22px;border-radius:99px;border:none;background:linear-gradient(135deg,#FF6B6B,#FF9F43);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(255,107,107,.3);}
+.land-start-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(255,107,107,.4);}
+
+/* Hero */
+.land-hero{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:80px 24px 60px;gap:24px;}
+.land-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:99px;border:1px solid rgba(255,159,67,.3);background:rgba(255,159,67,.08);font-size:11px;font-weight:700;color:#FF9F43;letter-spacing:.08em;text-transform:uppercase;}
+.land-h1{font-family:'Fraunces',serif;font-size:clamp(38px,7vw,80px);font-weight:900;color:#fff;line-height:1.05;max-width:800px;}
+.land-h1 .grad{background:linear-gradient(135deg,#FF6B6B,#FF9F43);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.land-sub{font-size:clamp(14px,2vw,18px);color:rgba(255,255,255,.5);max-width:500px;line-height:1.65;}
+.land-cta-wrap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.land-cta-primary{padding:16px 36px;border-radius:14px;border:none;background:linear-gradient(135deg,#FF6B6B,#FF9F43);color:#fff;font-family:'Fraunces',serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 8px 32px rgba(255,107,107,.35);}
+.land-cta-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,107,107,.45);}
+.land-cta-secondary{padding:16px 36px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.7);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;}
+.land-cta-secondary:hover{background:rgba(255,255,255,.06);}
+
+/* Feature pills */
+.land-pills{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px;}
+.land-pill{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:99px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.6);font-weight:500;}
+
+/* App preview mockup */
+.land-mockup{position:relative;z-index:2;padding:0 24px 60px;display:flex;justify-content:center;}
+.land-mockup-inner{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:3px;width:100%;max-width:760px;box-shadow:0 40px 120px rgba(0,0,0,.6);}
+.land-mockup-bar{background:rgba(255,255,255,.04);border-radius:20px 20px 0 0;padding:10px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06);}
+.land-mockup-dot{width:10px;height:10px;border-radius:50%;}
+.land-mockup-content{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.land-feat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;transition:all .3s;}
+.land-feat-card:hover{background:rgba(255,255,255,.07);transform:translateY(-2px);}
+.lfc-icon{font-size:28px;margin-bottom:10px;}
+.lfc-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.lfc-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;}
+
+/* Stats strip */
+.land-stats{position:relative;z-index:2;display:flex;justify-content:center;gap:0;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+.land-stat{flex:1;max-width:200px;text-align:center;padding:32px 16px;border-right:1px solid rgba(255,255,255,.06);}
+.land-stat:last-child{border-right:none;}
+.land-stat-num{font-family:'Fraunces',serif;font-size:36px;font-weight:900;background:linear-gradient(135deg,#FF6B6B,#FF9F43);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.land-stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+
+/* Footer */
+.land-footer{position:relative;z-index:2;text-align:center;padding:32px;font-size:12px;color:rgba(255,255,255,.25);}
+
+@media(max-width:768px){
+  .land-nav{padding:16px 20px;}
+  .land-hero{padding:50px 20px 40px;}
+  .land-mockup-content{grid-template-columns:1fr 1fr;}
+  .land-stats{flex-wrap:wrap;}
+  .land-stat{min-width:50%;}
+}
+@media(max-width:480px){
+  .land-mockup-content{grid-template-columns:1fr;}
+  .land-cta-wrap{flex-direction:column;width:100%;max-width:280px;}
+  .land-cta-primary,.land-cta-secondary{width:100%;}
+}
+
+/* ══ ONBOARDING TOUR ═══════════════════════════════ */
+#onboarding-overlay{position:fixed;inset:0;z-index:500;pointer-events:none;}
+#onboarding-overlay.active{pointer-events:all;}
+.onb-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(2px);}
+.onb-card{position:fixed;background:var(--white);border-radius:20px;padding:28px 28px 20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:onbIn .3s cubic-bezier(.34,1.4,.64,1);}
+@keyframes onbIn{from{opacity:0;transform:scale(.85) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.onb-step-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border-radius:99px;padding:4px 12px;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em;}
+.onb-icon{font-size:36px;margin-bottom:10px;}
+.onb-title{font-family:'Fraunces',serif;font-size:19px;font-weight:900;color:var(--ink);margin-bottom:6px;}
+.onb-desc{font-size:13px;color:var(--muted);line-height:1.55;}
+.onb-progress{display:flex;gap:5px;margin-top:18px;}
+.onb-dot{width:6px;height:6px;border-radius:99px;background:var(--border);transition:all .3s;}
+.onb-dot.active{background:var(--ink);width:18px;}
+.onb-btns{display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+.onb-skip{background:transparent;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+.onb-next{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px 20px;font-family:'Fraunces',serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.onb-next:hover{opacity:.85;}
+.onb-highlight{position:fixed;border-radius:12px;box-shadow:0 0 0 4px rgba(255,159,67,.7),0 0 0 9999px rgba(0,0,0,.55);transition:all .4s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:499;}
+
+/* ══ HABIT STATS CARDS ═════════════════════════════ */
+.habit-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.habit-stat-card{background:var(--white);border-radius:16px;border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow);}
+.hsc-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;}
+.hsc-value{font-family:'Fraunces',serif;font-size:28px;font-weight:900;color:var(--ink);line-height:1;}
+.hsc-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.hsc-icon{font-size:22px;margin-bottom:6px;}
+@media(max-width:600px){.habit-stats-row{grid-template-columns:repeat(3,1fr);gap:8px;}.hsc-value{font-size:22px;}.hsc-label{font-size:9px;}.habit-stat-card{padding:12px 10px;}}
+
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
 
 /* ══ POMODORO PAGE ══════════════════════════ */
@@ -1042,6 +1138,114 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <div id="loading"><div class="loader"></div><div class="loader-text">LOADING WEEKFLOW PRO...</div></div>
 
 <!-- AUTH -->
+<!-- ══ LANDING PAGE ══ -->
+<div id="landing" class="hidden">
+  <nav class="land-nav">
+    <div class="land-logo">Week<span>Flow</span></div>
+    <div class="land-nav-btns">
+      <button class="land-signin-btn" onclick="showAuthFromLanding('login')">Sign In</button>
+      <button class="land-start-btn" onclick="showAuthFromLanding('signup')">Get Started Free →</button>
+    </div>
+  </nav>
+
+  <section class="land-hero">
+    <div class="land-badge">✦ Your personal productivity OS</div>
+    <h1 class="land-h1">Plan your week.<br><span class="grad">Build your habits.</span><br>Ship your projects.</h1>
+    <p class="land-sub">WeekFlow combines your weekly planner, habit tracker, focus timer, and team boards — all in one beautiful app.</p>
+    <div class="land-cta-wrap">
+      <button class="land-cta-primary" onclick="showAuthFromLanding('signup')">Start for Free ✦</button>
+      <button class="land-cta-secondary" onclick="showAuthFromLanding('login')">I have an account</button>
+    </div>
+    <div class="land-pills">
+      <span class="land-pill">📅 Weekly Planner</span>
+      <span class="land-pill">🎯 Habit Tracker</span>
+      <span class="land-pill">🗂️ Team Boards</span>
+      <span class="land-pill">🍅 Focus Timer</span>
+      <span class="land-pill">📊 Dashboard</span>
+    </div>
+  </section>
+
+  <section class="land-mockup">
+    <div class="land-mockup-inner">
+      <div class="land-mockup-bar">
+        <div class="land-mockup-dot" style="background:#FF6B6B;"></div>
+        <div class="land-mockup-dot" style="background:#f0c040;"></div>
+        <div class="land-mockup-dot" style="background:#26de81;"></div>
+      </div>
+      <div class="land-mockup-content">
+        <div class="land-feat-card">
+          <div class="lfc-icon">📅</div>
+          <div class="lfc-title">7-Day Planner</div>
+          <div class="lfc-desc">Plan every day of your week with drag-and-drop tasks, priorities, and categories.</div>
+        </div>
+        <div class="land-feat-card">
+          <div class="lfc-icon">🎯</div>
+          <div class="lfc-title">Habit Tracker</div>
+          <div class="lfc-desc">Build consistency with a beautiful grid tracker. Streaks, colors, and perfect week badges.</div>
+        </div>
+        <div class="land-feat-card">
+          <div class="lfc-icon">🗂️</div>
+          <div class="lfc-title">Team Boards</div>
+          <div class="lfc-desc">Collaborate with your team in real-time with Trello-style kanban boards.</div>
+        </div>
+        <div class="land-feat-card">
+          <div class="lfc-icon">🍅</div>
+          <div class="lfc-title">Focus Timer</div>
+          <div class="lfc-desc">Stay in the zone with Pomodoro sessions. Track your focus hours daily.</div>
+        </div>
+        <div class="land-feat-card">
+          <div class="lfc-icon">📊</div>
+          <div class="lfc-title">Dashboard</div>
+          <div class="lfc-desc">See your productivity at a glance. Weekly completion charts and insights.</div>
+        </div>
+        <div class="land-feat-card">
+          <div class="lfc-icon">☁️</div>
+          <div class="lfc-title">Cloud Sync</div>
+          <div class="lfc-desc">Your data syncs instantly across all your devices. Access anywhere, anytime.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="land-stats">
+    <div class="land-stat">
+      <div class="land-stat-num">100%</div>
+      <div class="land-stat-label">Free forever</div>
+    </div>
+    <div class="land-stat">
+      <div class="land-stat-num">5+</div>
+      <div class="land-stat-label">Built-in tools</div>
+    </div>
+    <div class="land-stat">
+      <div class="land-stat-num">∞</div>
+      <div class="land-stat-label">Tasks & habits</div>
+    </div>
+    <div class="land-stat">
+      <div class="land-stat-num">0</div>
+      <div class="land-stat-label">Ads ever</div>
+    </div>
+  </section>
+
+  <footer class="land-footer">Made with ❤️ · WeekFlow · Free forever · No ads</footer>
+</div>
+
+<!-- ══ ONBOARDING TOUR ══ -->
+<div id="onboarding-overlay">
+  <div class="onb-backdrop" id="onb-backdrop" onclick="skipOnboarding()" style="display:none;"></div>
+  <div class="onb-highlight" id="onb-highlight" style="display:none;"></div>
+  <div class="onb-card" id="onb-card" style="display:none;">
+    <div class="onb-step-badge" id="onb-step-badge">Step 1 of 5</div>
+    <div class="onb-icon" id="onb-icon">👋</div>
+    <div class="onb-title" id="onb-title">Welcome to WeekFlow!</div>
+    <div class="onb-desc" id="onb-desc">Let's take a quick tour so you can get the most out of the app.</div>
+    <div class="onb-progress" id="onb-progress"></div>
+    <div class="onb-btns">
+      <button class="onb-skip" onclick="skipOnboarding()">Skip tour</button>
+      <button class="onb-next" id="onb-next-btn" onclick="nextOnboardingStep()">Next →</button>
+    </div>
+  </div>
+</div>
+
 <div id="auth-screen" class="hidden">
   <div class="auth-box">
     <div class="auth-logo">Week<span>Flow</span></div>
@@ -1408,6 +1612,26 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         </div>
         <button class="add-habit-btn" onclick="openAddHabitModal()">+ New Habit</button>
       </div>
+      <div class="habit-stats-row" id="habit-stats-row" style="display:none;">
+        <div class="habit-stat-card">
+          <div class="hsc-icon">✅</div>
+          <div class="hsc-label">This Week</div>
+          <div class="hsc-value" id="hsc-week">0</div>
+          <div class="hsc-sub">completions</div>
+        </div>
+        <div class="habit-stat-card">
+          <div class="hsc-icon">🔥</div>
+          <div class="hsc-label">Best Streak</div>
+          <div class="hsc-value" id="hsc-streak">0</div>
+          <div class="hsc-sub">days in a row</div>
+        </div>
+        <div class="habit-stat-card">
+          <div class="hsc-icon">⭐</div>
+          <div class="hsc-label">Completion</div>
+          <div class="hsc-value" id="hsc-rate">0%</div>
+          <div class="hsc-sub">this week</div>
+        </div>
+      </div>
       <div class="perfect-week-banner" id="perfect-week-banner">
         <div class="pwb-icon">🏆</div>
         <div>
@@ -1760,7 +1984,11 @@ onAuthStateChanged(auth,async user=>{
   if(user){
     currentUser=user;
     document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('landing').classList.add('hidden');
     document.getElementById('app').classList.add('visible');
+    if(!localStorage.getItem('wf_onboarded')){
+      setTimeout(startOnboarding, 1500);
+    }
     const name=user.displayName||user.email.split('@')[0];
     document.getElementById('tb-name').textContent=name;
     const av=document.getElementById('tb-avatar');
@@ -1773,7 +2001,10 @@ onAuthStateChanged(auth,async user=>{
     renderDashboard();
   } else {
     currentUser=null;weekData={};allWeekData={};templates=[];
-    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('landing').classList.remove('hidden');
+    // Show landing page instead of going straight to auth
+    document.getElementById('landing').classList.remove('hidden');
+    document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('app').classList.remove('visible');
   }
 });
@@ -3508,6 +3739,7 @@ async function renderHabitsPage(){
   await loadHabits();
   renderHabitsGrid();
   checkPerfectWeek();
+  updateHabitStats();
 }
 
 
@@ -3645,6 +3877,7 @@ window.toggleHabit = async function(habitId, dateStr){
   renderHabitsGrid();
   checkPerfectDay();
   checkPerfectWeek();
+  updateHabitStats();
   await saveHabits();
 };
 
@@ -3732,6 +3965,148 @@ document.getElementById('add-habit-modal')?.addEventListener('click', e => {
     document.getElementById('add-habit-modal').classList.remove('show');
 });
 
+
+
+// ══ LANDING PAGE ═══════════════════════════════════
+window.showAuthFromLanding = function(tab){
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('auth-screen').classList.remove('hidden');
+  // Switch to correct tab
+  if(tab === 'signup'){
+    document.getElementById('tab-signup').click();
+  } else {
+    document.getElementById('tab-login').click();
+  }
+};
+
+// ══ ONBOARDING TOUR ════════════════════════════════
+const ONBOARDING_STEPS = [
+  { icon:'👋', title:'Welcome to WeekFlow!', desc:'You re all set! Lets take a 30-second tour so you get the most out of the app. You can skip anytime.', target:null, pos:'center' },
+  { icon:'📅', title:'Your Weekly Planner', desc:'This is your main view. Add tasks to any day, set priorities, and check them off as you go.', target:'tab-planner', pos:'bottom' },
+  { icon:'🎯', title:'Habit Tracker', desc:'Track daily habits with a beautiful grid. Build streaks and earn a Perfect Week badge!', target:'tab-habits', pos:'bottom' },
+  { icon:'🗂️', title:'Team Boards', desc:'Collaborate with others in real-time using Trello-style boards. Invite teammates by email.', target:'tab-boards', pos:'bottom' },
+  { icon:'🍅', title:'Focus Timer', desc:'Use the Pomodoro timer to stay focused. 25 minutes on, 5 minutes break. Track your sessions!', target:'tab-pomodoro', pos:'bottom' },
+];
+let onbStep = 0;
+
+function startOnboarding(){
+  onbStep = 0;
+  document.getElementById('onb-backdrop').style.display = 'block';
+  document.getElementById('onboarding-overlay').classList.add('active');
+  showOnbStep();
+}
+
+function showOnbStep(){
+  const step = ONBOARDING_STEPS[onbStep];
+  const card = document.getElementById('onb-card');
+  const total = ONBOARDING_STEPS.length;
+  card.style.display = 'block';
+
+  document.getElementById('onb-step-badge').textContent = `Step ${onbStep+1} of ${total}`;
+  document.getElementById('onb-icon').textContent = step.icon;
+  document.getElementById('onb-title').textContent = step.title;
+  document.getElementById('onb-desc').textContent = step.desc;
+  document.getElementById('onb-next-btn').textContent = onbStep === total-1 ? 'Done ✓' : 'Next →';
+
+  // Progress dots
+  const prog = document.getElementById('onb-progress');
+  prog.innerHTML = ONBOARDING_STEPS.map((_,i)=>`<div class="onb-dot${i===onbStep?' active':''}"></div>`).join('');
+
+  // Highlight target element
+  const highlight = document.getElementById('onb-highlight');
+  if(step.target){
+    const el = document.getElementById(step.target);
+    if(el){
+      const r = el.getBoundingClientRect();
+      highlight.style.display = 'block';
+      highlight.style.left = (r.left-6)+'px';
+      highlight.style.top = (r.top-6)+'px';
+      highlight.style.width = (r.width+12)+'px';
+      highlight.style.height = (r.height+12)+'px';
+      // Position card near element
+      const cardTop = r.bottom + 18;
+      card.style.top = Math.min(cardTop, window.innerHeight - 280)+'px';
+      card.style.left = Math.max(12, Math.min(r.left, window.innerWidth - 320))+'px';
+      card.style.bottom = 'auto';
+    }
+  } else {
+    highlight.style.display = 'none';
+    // Center card
+    card.style.top = '50%';
+    card.style.left = '50%';
+    card.style.transform = 'translate(-50%,-50%)';
+    card.style.bottom = 'auto';
+  }
+  if(step.target) card.style.transform = '';
+}
+
+window.nextOnboardingStep = function(){
+  if(onbStep >= ONBOARDING_STEPS.length - 1){
+    skipOnboarding();
+    return;
+  }
+  onbStep++;
+  // Animate out and in
+  const card = document.getElementById('onb-card');
+  card.style.animation = 'none';
+  setTimeout(()=>{
+    card.style.animation = 'onbIn .3s cubic-bezier(.34,1.4,.64,1)';
+    showOnbStep();
+  }, 50);
+};
+
+window.skipOnboarding = function(){
+  document.getElementById('onb-card').style.display = 'none';
+  document.getElementById('onb-backdrop').style.display = 'none';
+  document.getElementById('onb-highlight').style.display = 'none';
+  document.getElementById('onboarding-overlay').classList.remove('active');
+  localStorage.setItem('wf_onboarded', '1');
+};
+
+// ══ HABIT STATS CARDS ══════════════════════════════
+function updateHabitStats(){
+  if(!habits.length){
+    document.getElementById('habit-stats-row').style.display = 'none';
+    return;
+  }
+  document.getElementById('habit-stats-row').style.display = '';
+
+  const now = new Date();
+  const mon = new Date(now);
+  mon.setHours(0,0,0,0);
+  mon.setDate(now.getDate() - ((now.getDay()+6)%7));
+  const weekDays = Array.from({length:7}, (_,i) => {
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  });
+
+  // Total completions this week
+  let weekTotal = 0;
+  weekDays.forEach(ds => {
+    habits.forEach(h => { if(habitLogs[`${h.id}_${ds}`]) weekTotal++; });
+  });
+
+  // Best current streak across all habits
+  let bestStreak = 0;
+  habits.forEach(h => {
+    let streak = 0;
+    const d = new Date(now);
+    while(true){
+      const ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      if(habitLogs[`${h.id}_${ds}`]){ streak++; d.setDate(d.getDate()-1); }
+      else break;
+    }
+    if(streak > bestStreak) bestStreak = streak;
+  });
+
+  // Completion rate this week
+  const possible = habits.length * 7;
+  const rate = possible > 0 ? Math.round((weekTotal / possible) * 100) : 0;
+
+  document.getElementById('hsc-week').textContent = weekTotal;
+  document.getElementById('hsc-streak').textContent = bestStreak;
+  document.getElementById('hsc-rate').textContent = rate + '%';
+}
 
 // ── Auth enter key ────────────────────────
 ['login-email','login-pass'].forEach(id=>{document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')window.emailLogin();});});
