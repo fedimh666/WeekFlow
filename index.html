@@ -697,37 +697,30 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .pwb-sub{font-size:11px;}
   .pwb-badge{display:none;}
 
-  /* Grid — no scroll, fits full width */
   .habits-grid-wrap{border-radius:14px;overflow:hidden;}
   .habits-grid{width:100%;}
+  .hg-corner,.habit-row-label,.hg-summary-label{width:auto;min-width:0;padding:8px 8px;}
+  .hg-day-header,.habit-cell,.hg-summary-cell{min-width:0;width:auto;}
 
-  /* Label column */
-  .hg-corner{width:110px;padding:10px 10px;min-height:48px;}
-  .hg-corner-label{font-size:8px;letter-spacing:.04em;}
-  .habit-row-label{width:110px;padding:10px 10px;gap:6px;}
-  .hg-summary-label{width:110px;padding:10px 10px;font-size:8px;}
-
-  /* Day headers — compact */
+  /* Day headers */
+  .hg-corner-label{font-size:8px;}
   .hg-day-header{padding:8px 2px 6px;}
-  .hg-day-num{font-size:13px;}
-  .hg-day-label{font-size:8px;letter-spacing:.03em;}
-
-  /* Today highlight bolder on mobile */
-  .hg-day-header.today-col-h{background:var(--ink);}
+  .hg-day-num{font-size:12px;}
+  .hg-day-label{font-size:8px;}
 
   /* Cells */
-  .habit-cell{min-height:52px;}
-  .habit-check{width:26px;height:26px;border-radius:7px;font-size:13px;}
+  .habit-cell{min-height:48px;}
+  .habit-check{width:22px;height:22px;border-radius:6px;font-size:12px;}
 
-  /* Habit label content */
-  .habit-emoji{width:30px!important;height:30px!important;font-size:15px!important;border-radius:8px!important;}
-  .habit-name{font-size:11px;font-weight:700;}
-  .habit-streak{font-size:9px;}
-  .habit-del-btn{opacity:1!important;font-size:11px;padding:2px 4px;}
+  /* Habit label */
+  .habit-emoji{width:26px!important;height:26px!important;font-size:13px!important;border-radius:6px!important;}
+  .habit-name{font-size:10px;font-weight:700;}
+  .habit-streak{display:none;}
+  .habit-del-btn{opacity:1!important;font-size:10px;padding:2px 3px;}
 
-  /* Summary row */
-  .hg-summary-cell{min-height:38px;}
-  .hg-summary-pill{width:22px;height:7px;}
+  /* Summary */
+  .hg-summary-cell{min-height:36px;}
+  .hg-summary-pill{width:18px;height:6px;}
 }
 
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
@@ -3557,11 +3550,10 @@ function renderHabitsGrid(){
   const dayLabels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
   // Grid template columns: label col + one col per day
-  // On mobile: fixed small columns so all 7 days fit without scrolling
-  const isMobile = window.innerWidth <= 768;
-  const labelW = isMobile ? '110px' : '240px';
-  const dayW = isMobile ? `${Math.floor((window.innerWidth - 110 - 16) / days.length)}px` : '1fr';
-  const gridCols = `${labelW} repeat(${days.length}, ${dayW})`;
+  const isMobile = window.innerWidth < 769;
+  const gridCols = isMobile
+    ? `100px repeat(${days.length}, 1fr)`
+    : `240px repeat(${days.length}, 1fr)`;
 
   // Week range label
   const weekStart = days[0];
