@@ -658,17 +658,78 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .hep-btn{width:38px;height:38px;border-radius:9px;border:2px solid transparent;background:var(--bg);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .hep-btn.active,.hep-btn:hover{border-color:var(--ink);background:var(--white);transform:scale(1.1);}
 
+/* Habit color picker */
+.habit-color-picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.hcp-btn{width:32px;height:32px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.hcp-btn.active{border-color:var(--ink);transform:scale(1.15);}
+.hcp-btn:hover{transform:scale(1.1);}
+
+/* Perfect week badge */
+.perfect-week-banner{display:none;background:linear-gradient(135deg,#f0c040,#FF9F43);border-radius:16px;padding:20px 24px;margin-bottom:24px;align-items:center;gap:16px;}
+.perfect-week-banner.show{display:flex;}
+.pwb-icon{font-size:40px;flex-shrink:0;animation:spin 3s linear infinite;}
+.pwb-title{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:#fff;}
+.pwb-sub{font-size:13px;color:rgba(255,255,255,.85);margin-top:2px;}
+.pwb-badge{background:rgba(255,255,255,.25);border-radius:99px;padding:4px 14px;font-size:11px;font-weight:800;color:#fff;margin-left:auto;white-space:nowrap;}
+
+/* Confetti canvas */
+#habit-confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+
 [data-theme="dark"] .hg-day-header.today-col-h{background:#fff;}
 [data-theme="dark"] .hg-day-header.today-col-h .hg-day-num{color:#1A1208;}
 [data-theme="dark"] .hg-day-header.today-col-h .hg-day-label{color:rgba(26,18,8,.5);}
 [data-theme="dark"] .habit-cell.done .habit-check{background:#fff;border-color:#fff;color:#1A1208;}
 
 @media(max-width:768px){
-  .habits-layout{padding:16px 12px;}
-  .habits-title{font-size:24px;}
-  .hg-corner,.habit-row-label{min-width:140px;padding:12px 14px;}
-  .hg-day-header,.habit-cell{min-width:52px;}
-  .habit-check{width:26px;height:26px;}
+  /* Layout */
+  .habits-layout{padding:12px 10px 100px;}
+  .habits-title{font-size:22px;}
+  .habits-subtitle{font-size:12px;}
+  .add-habit-btn{padding:9px 14px;font-size:12px;}
+  .habits-week-bar{margin-bottom:10px;}
+  .habits-week-range{font-size:13px;}
+
+  /* Perfect week banner */
+  .perfect-week-banner{padding:14px 16px;gap:10px;border-radius:12px;}
+  .pwb-icon{font-size:28px;}
+  .pwb-title{font-size:16px;}
+  .pwb-sub{font-size:11px;}
+  .pwb-badge{display:none;}
+
+  /* Grid — horizontal scroll with fixed label col */
+  .habits-grid-wrap{border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .habits-grid{width:max-content;min-width:100%;}
+
+  /* Label column — narrow on mobile */
+  .hg-corner{width:130px;padding:12px 12px;min-height:52px;}
+  .hg-corner-label{font-size:9px;}
+  .habit-row-label{width:130px;padding:10px 12px;gap:8px;}
+  .hg-summary-label{width:130px;padding:10px 12px;font-size:9px;}
+
+  /* Day columns — compact but tappable */
+  .hg-day-header{padding:10px 4px 8px;min-width:48px;}
+  .hg-day-num{font-size:15px;}
+  .hg-day-label{font-size:9px;}
+
+  /* Cells — big enough to tap comfortably */
+  .habit-cell{min-height:52px;min-width:48px;}
+  .habit-check{width:28px;height:28px;border-radius:8px;font-size:14px;}
+
+  /* Habit label content */
+  .habit-emoji{width:32px!important;height:32px!important;font-size:16px!important;border-radius:8px!important;}
+  .habit-name{font-size:12px;}
+  .habit-streak{font-size:10px;}
+  .habit-del-btn{opacity:1;font-size:11px;} /* always visible on mobile */
+
+  /* Summary row */
+  .hg-summary-cell{min-width:48px;min-height:40px;}
+  .hg-summary-pill{width:28px;height:8px;}
+}
+
+@media(max-width:400px){
+  .hg-corner,.habit-row-label,.hg-summary-label{width:110px;}
+  .hg-day-header,.habit-cell,.hg-summary-cell{min-width:42px;}
+  .habit-check{width:24px;height:24px;}
 }
 
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
@@ -1356,15 +1417,39 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         </div>
         <button class="add-habit-btn" onclick="openAddHabitModal()">+ New Habit</button>
       </div>
+      <div class="perfect-week-banner" id="perfect-week-banner">
+        <div class="pwb-icon">🏆</div>
+        <div>
+          <div class="pwb-title">Perfect Week!</div>
+          <div class="pwb-sub">You completed all habits every day this week. Incredible! 🔥</div>
+        </div>
+        <div class="pwb-badge">⭐ PERFECT WEEK</div>
+      </div>
       <div id="habits-grid-container"></div>
     </div>
   </div>
+
+  <!-- confetti canvas -->
+  <canvas id="habit-confetti" style="display:none;"></canvas>
 
   <!-- ADD HABIT MODAL -->
   <div class="modal-overlay" id="add-habit-modal">
     <div class="modal">
       <h3>Add New Habit</h3>
       <div class="field"><label>Habit Name</label><input id="habit-name-input" placeholder="e.g. Morning Run, Read 20 min..."></div>
+      <div class="field">
+        <label>Pick a Color</label>
+        <div class="habit-color-picker" id="habit-color-picker">
+          <button class="hcp-btn active" data-color="#FF6B6B" style="background:#FF6B6B;"></button>
+          <button class="hcp-btn" data-color="#FF9F43" style="background:#FF9F43;"></button>
+          <button class="hcp-btn" data-color="#f0c040" style="background:#f0c040;"></button>
+          <button class="hcp-btn" data-color="#26de81" style="background:#26de81;"></button>
+          <button class="hcp-btn" data-color="#45aaf2" style="background:#45aaf2;"></button>
+          <button class="hcp-btn" data-color="#a29bfe" style="background:#a29bfe;"></button>
+          <button class="hcp-btn" data-color="#fd79a8" style="background:#fd79a8;"></button>
+          <button class="hcp-btn" data-color="#1A1208" style="background:#1A1208;"></button>
+        </div>
+      </div>
       <div class="field">
         <label>Pick an Emoji</label>
         <div class="habit-emoji-picker" id="habit-emoji-picker">
@@ -3324,10 +3409,89 @@ document.getElementById('card-modal-title')?.addEventListener('keydown', e=>{ if
 
 // ══ HABITS TRACKER ═══════════════════════════════════════
 
-let habitView = 'week'; // 'week' | 'month'
-let habits = [];        // [{id, name, emoji, createdAt}]
-let habitLogs = {};     // {'habitId_YYYY-MM-DD': true}
+let habitView = 'week';
+let habits = [];
+let habitLogs = {};
 let selectedHabitEmoji = '🎯';
+let selectedHabitColor = '#FF6B6B';
+
+// ── Color picker ──
+document.getElementById('habit-color-picker')?.addEventListener('click', e => {
+  const btn = e.target.closest('.hcp-btn');
+  if(!btn) return;
+  selectedHabitColor = btn.dataset.color;
+  document.querySelectorAll('.hcp-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+// ── Confetti engine ──
+function fireConfetti(){
+  const canvas = document.getElementById('habit-confetti');
+  if(!canvas) return;
+  canvas.style.display = 'block';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const pieces = Array.from({length:120}, () => ({
+    x: Math.random()*canvas.width,
+    y: -20 - Math.random()*100,
+    r: 4 + Math.random()*6,
+    color: ['#FF6B6B','#FF9F43','#f0c040','#26de81','#45aaf2','#a29bfe','#fd79a8'][Math.floor(Math.random()*7)],
+    speed: 2 + Math.random()*4,
+    swing: (Math.random()-0.5)*3,
+    rot: Math.random()*360,
+    rotSpeed: (Math.random()-0.5)*6,
+    shape: Math.random()>0.5?'rect':'circle'
+  }));
+  let frame = 0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - frame/90);
+      if(p.shape==='rect'){
+        ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);
+      } else {
+        ctx.beginPath();ctx.arc(0,0,p.r,0,Math.PI*2);ctx.fill();
+      }
+      ctx.restore();
+      p.y += p.speed; p.x += p.swing; p.rot += p.rotSpeed;
+    });
+    frame++;
+    if(frame < 100) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  }
+  draw();
+}
+
+// ── Check perfect day (all habits done today) ──
+function checkPerfectDay(){
+  const now = new Date();
+  const todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const allDone = habits.length > 0 && habits.every(h => habitLogs[`${h.id}_${todayStr}`]);
+  if(allDone) setTimeout(fireConfetti, 200);
+}
+
+// ── Check perfect week (all habits done every day this week) ──
+function checkPerfectWeek(){
+  const now = new Date();
+  const mon = new Date(now);
+  mon.setHours(0,0,0,0);
+  mon.setDate(now.getDate() - ((now.getDay()+6)%7));
+  const days = Array.from({length:7},(_,i)=>{
+    const d = new Date(mon); d.setDate(mon.getDate()+i);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  });
+  const banner = document.getElementById('perfect-week-banner');
+  if(!banner) return;
+  const isPerfect = habits.length > 0 && days.every(ds =>
+    habits.every(h => habitLogs[`${h.id}_${ds}`])
+  );
+  banner.classList.toggle('show', isPerfect);
+}
 
 function habitsRef(){ return doc(db,'users',currentUser.uid,'habits','data'); }
 
@@ -3352,6 +3516,7 @@ async function saveHabits(){
 async function renderHabitsPage(){
   await loadHabits();
   renderHabitsGrid();
+  checkPerfectWeek();
 }
 
 
@@ -3438,8 +3603,9 @@ function renderHabitsGrid(){
     const onFire = streak >= 3;
 
     const freqLabel = {daily:'', weekly:'W'}[habit.freq||'daily'];
+    const hColor = habit.color || '#45aaf2';
     html += `<div class="habit-row-label">
-      <span class="habit-emoji">${habit.emoji||'🎯'}</span>
+      <span class="habit-emoji" style="background:${hColor}22;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${habit.emoji||'🎯'}</span>
       <div class="habit-name-wrap">
         <span class="habit-name">${habit.name}${freqLabel?` <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;background:var(--border);color:var(--muted);vertical-align:middle;">${freqLabel}</span>`:''}</span>
         <span class="habit-streak${onFire?' on-fire':''}">${streak>0?(onFire?'🔥 '+streak+' day streak':'⚡ '+streak+' day streak'):''}</span>
@@ -3452,10 +3618,9 @@ function renderHabitsGrid(){
       const key = `${habit.id}_${ds}`;
       const done = !!habitLogs[key];
       const isToday = ds === todayStr;
-      const isFuture = ds > todayStr;
       html += `<div class="habit-cell${done?' done':''}${isToday?' today-col-c':''}"
-        onclick="toggleHabit('${habit.id}','${ds}')" data-key="${key}">
-        <div class="habit-check"></div>
+        onclick="toggleHabit('${habit.id}','${ds}')" data-key="${key}" data-color="${hColor}">
+        <div class="habit-check" style="${done?`background:${hColor};border-color:${hColor};`:`border-color:${hColor}44;`}"></div>
       </div>`;
     });
   });
@@ -3483,11 +3648,9 @@ window.toggleHabit = async function(habitId, dateStr){
   const key = `${habitId}_${dateStr}`;
   if(habitLogs[key]) delete habitLogs[key];
   else habitLogs[key] = true;
-  // Optimistic UI update
-  const cell = document.querySelector(`[data-key="${key}"]`);
-  if(cell) cell.classList.toggle('done', !!habitLogs[key]);
-  // Update streak display
   renderHabitsGrid();
+  checkPerfectDay();
+  checkPerfectWeek();
   await saveHabits();
 };
 
@@ -3530,10 +3693,15 @@ document.addEventListener('DOMContentLoaded', () => {
 window.openAddHabitModal = function(){
   document.getElementById('habit-name-input').value = '';
   selectedHabitEmoji = '🎯';
+  selectedHabitColor = '#FF6B6B';
   selectedHabitFreq = 'daily';
   // Reset emoji picker
   document.querySelectorAll('.hep-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.emoji === '🎯');
+  });
+  // Reset color picker
+  document.querySelectorAll('.hcp-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.color === '#FF6B6B');
   });
   // Reset freq to daily
   applyFreqUI('daily');
@@ -3553,7 +3721,7 @@ window.saveNewHabit = async function(){
   const name = document.getElementById('habit-name-input').value.trim();
   if(!name){ showToast('⚠️ Enter a habit name'); return; }
   const newFreq = selectedHabitFreq;
-  habits.push({ id: uid(), name, emoji: selectedHabitEmoji, freq: newFreq, createdAt: new Date().toISOString() });
+  habits.push({ id: uid(), name, emoji: selectedHabitEmoji, color: selectedHabitColor, freq: newFreq, createdAt: new Date().toISOString() });
   await saveHabits();
   document.getElementById('add-habit-modal').classList.remove('show');
   // Auto-switch to the right view so user sees the new habit immediately
